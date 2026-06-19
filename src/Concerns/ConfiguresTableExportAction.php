@@ -189,10 +189,14 @@ trait ConfiguresTableExportAction
 
     protected function getMaxPdfRows(): int
     {
-        $plugin = filament()->getCurrentPanel()?->getPlugin(AdvancedTableExportForFilamentPlugin::class);
+        $panel = filament()->getCurrentPanel();
 
-        if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
-            return $plugin->getMaxPdfRows();
+        if ($panel?->hasPlugin(AdvancedTableExportForFilamentPlugin::ID)) {
+            $plugin = $panel->getPlugin(AdvancedTableExportForFilamentPlugin::ID);
+
+            if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
+                return $plugin->getMaxPdfRows();
+            }
         }
 
         return (int) config('advanced-table-export-for-filament.max_pdf_rows', 200);
@@ -200,10 +204,14 @@ trait ConfiguresTableExportAction
 
     protected function getMaxExportRows(): int
     {
-        $plugin = filament()->getCurrentPanel()?->getPlugin(AdvancedTableExportForFilamentPlugin::class);
+        $panel = filament()->getCurrentPanel();
 
-        if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
-            return $plugin->getMaxExportRows();
+        if ($panel?->hasPlugin(AdvancedTableExportForFilamentPlugin::ID)) {
+            $plugin = $panel->getPlugin(AdvancedTableExportForFilamentPlugin::ID);
+
+            if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
+                return $plugin->getMaxExportRows();
+            }
         }
 
         return (int) config('advanced-table-export-for-filament.max_export_rows', 2000);
@@ -211,10 +219,14 @@ trait ConfiguresTableExportAction
 
     protected function getPreviewPerPage(): int
     {
-        $plugin = filament()->getCurrentPanel()?->getPlugin(AdvancedTableExportForFilamentPlugin::class);
+        $panel = filament()->getCurrentPanel();
 
-        if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
-            return $plugin->getPreviewPerPage();
+        if ($panel?->hasPlugin(AdvancedTableExportForFilamentPlugin::ID)) {
+            $plugin = $panel->getPlugin(AdvancedTableExportForFilamentPlugin::ID);
+
+            if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
+                return $plugin->getPreviewPerPage();
+            }
         }
 
         return (int) config('advanced-table-export-for-filament.preview_per_page', 25);

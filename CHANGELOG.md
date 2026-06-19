@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-06-19
+
+### Fixed
+- Resolve panel plugin limits using the plugin ID instead of the class name, fixing broken preview and export actions when the plugin was registered on the panel
+
 ## [0.2.0] - 2026-06-19
 
 ### Added
@@ -32,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - English and German translations
 - OpenSpout dependency for upcoming spreadsheet exports
 
-[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.2.1
 [0.2.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.2.0
 [0.1.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.1.0
