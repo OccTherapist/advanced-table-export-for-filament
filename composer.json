@@ -1,14 +1,20 @@
 {
     "name": "occtherapist/advanced-table-export-for-filament",
-    "description": "Customizable export and print functionality for Filament admin tables.",
+    "description": "Export and print Filament admin tables to CSV, XLSX, and PDF — Filament v4/v5 compatible successor to filament-export.",
     "keywords": [
         "filament",
+        "filament-plugin",
         "laravel",
         "export",
+        "table-export",
         "print",
         "pdf",
         "csv",
-        "xlsx"
+        "xlsx",
+        "openspout",
+        "browsershot",
+        "dompdf",
+        "filament-export"
     ],
     "homepage": "https://github.com/OccTherapist/advanced-table-export-for-filament",
     "license": "MIT",
@@ -16,9 +22,15 @@
     "authors": [
         {
             "name": "Igor Clauss",
-            "homepage": "https://github.com/OccTherapist"
+            "homepage": "https://igorclauss.de",
+            "role": "Developer"
         }
     ],
+    "support": {
+        "issues": "https://github.com/OccTherapist/advanced-table-export-for-filament/issues",
+        "source": "https://github.com/OccTherapist/advanced-table-export-for-filament",
+        "docs": "https://github.com/OccTherapist/advanced-table-export-for-filament#readme"
+    },
     "require": {
         "php": "^8.2",
         "filament/filament": "^4.0|^5.0",
@@ -58,6 +70,10 @@
         "allow-plugins": {
             "php-http/discovery": true
         }
+    },
+    "scripts": {
+        "lint": "pint",
+        "lint:check": "pint --test"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

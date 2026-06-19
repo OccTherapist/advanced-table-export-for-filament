@@ -1,0 +1,46 @@
+name: Bug report
+description: Report something that isn't working as expected
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. Please fill in as much detail as you can.
+
+  - type: input
+    id: versions
+    attributes:
+      label: Environment
+      description: PHP, Laravel, and Filament versions
+      placeholder: "PHP 8.3, Laravel 12, Filament 4.2"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug and what you expected instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps or code snippet to reproduce the issue
+      placeholder: |
+        1. Install package
+        2. Add TableExportHeaderAction to a table
+        3. Click export
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or screenshots
+      description: Stack traces, error messages, or screenshots if applicable
+    validations:
+      required: false
