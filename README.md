@@ -196,7 +196,64 @@ If you used [`alperenersoy/filament-export`](https://github.com/alperenersoy/fil
   ])
 ```
 
-Many `disable*` options from the original package map directly to config keys (see [Configuration](#configuration)). Method chaining for labels and format toggles will expand in upcoming releases — [open an issue](https://github.com/OccTherapist/advanced-table-export-for-filament/issues) if you need a specific API.
+Many `disable*` options from the original package map directly to config keys (see [Configuration](#configuration)) or can be set per action via method chaining (see [Action customization](#action-customization)).
+
+---
+
+## Action customization
+
+Both export actions support a fluent API similar to `filament-export`:
+
+```php
+use Filament\Tables\Columns\TextColumn;
+use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportHeaderAction;
+use OccTherapist\AdvancedTableExportForFilament\Enums\ExportFormat;
+
+TableExportHeaderAction::make()
+    ->fileName('monthly-report')
+    ->timeFormat('Y-m-d')
+    ->defaultFormat(ExportFormat::Pdf)
+    ->defaultPageOrientation('portrait')
+    ->disableCsv()
+    ->disablePreview()
+    ->directDownload()
+    ->withHiddenColumns()
+    ->csvDelimiter(';')
+    ->withColumns([
+        TextColumn::make('internal_notes')->label('Notes'),
+    ])
+    ->formatStates([
+        'status' => fn ($record) => strtoupper((string) $record->status),
+    ])
+    ->extraViewData([
+        'company' => 'Acme GmbH',
+    ])
+    ->fileNameFieldLabel('Report name')
+    ->formatFieldLabel('Export as')
+    ->filterColumnsFieldLabel('Included columns');
+```
+
+| Method | Description |
+|--------|-------------|
+| `fileName()` | Default file name |
+| `timeFormat()` | Timestamp format when the file name is generated automatically |
+| `disablePdf()` / `disableXlsx()` / `disableCsv()` | Hide export formats |
+| `defaultFormat()` | Default selected format |
+| `defaultPageOrientation()` | Default PDF orientation |
+| `directDownload()` | Skip the modal and export immediately with defaults |
+| `disableFilterColumns()` | Hide the column picker |
+| `disableFileName()` | Hide the file name input |
+| `disableFileNamePrefix()` | Disable automatic table-name prefix |
+| `disablePreview()` | Hide the paginated preview |
+| `disableTableColumns()` | Export only columns from `withColumns()` |
+| `withHiddenColumns()` | Include toggled-hidden table columns in exports |
+| `withColumns()` | Add extra model columns to the export |
+| `csvDelimiter()` | CSV delimiter for this action |
+| `formatStates()` | Override exported values per column |
+| `extraViewData()` | Extra variables for PDF/preview Blade views |
+| `modifyExportQueryUsing()` | Modify the export query before fetching records |
+
+Action-level settings override global config values.
 
 ---
 
@@ -204,8 +261,8 @@ Many `disable*` options from the original package map directly to config keys (s
 
 | Version | Focus |
 |---------|-------|
-| **v0.2.0** *(current)* | CSV/XLSX/PDF export execution, paginated preview, column resolution |
-| **v0.3.0** | Action fluent API (`disablePdf()`, `withColumns()`, `directDownload()`, …) |
+| **v0.3.0** *(current)* | Fluent action API, `directDownload()`, `formatStates()`, `extraViewData()` |
+| **v0.4.0** | Custom PDF/preview Blade publishing, writer hooks |
 
 Star or watch the repository to follow progress: [github.com/OccTherapist/advanced-table-export-for-filament](https://github.com/OccTherapist/advanced-table-export-for-filament)
 

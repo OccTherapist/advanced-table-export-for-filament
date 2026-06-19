@@ -43,6 +43,24 @@ class ExportColumnCollectionTest extends TestCase
         $this->assertSame(['name', 'internal_id'], $columns->map->getName()->all());
     }
 
+    public function test_disable_table_columns_exports_only_additional_columns(): void
+    {
+        $table = TableFactory::make([
+            TextColumn::make('name')->label('Name'),
+        ]);
+
+        $columns = ExportColumnCollection::resolve(
+            table: $table,
+            additionalColumns: [
+                TextColumn::make('internal_id')->label('Internal ID'),
+            ],
+            disableTableColumns: true,
+        );
+
+        $this->assertCount(1, $columns);
+        $this->assertSame('internal_id', $columns->first()->getName());
+    }
+
     public function test_it_builds_header_labels(): void
     {
         $table = TableFactory::make([

@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-06-19
+
+### Added
+- Fluent action API compatible with `filament-export`: `disablePdf()`, `disableXlsx()`, `disableCsv()`, `defaultFormat()`, `defaultPageOrientation()`, `directDownload()`, `fileName()`, `timeFormat()`, `csvDelimiter()`, `withHiddenColumns()`, `disableTableColumns()`, `formatStates()`, `extraViewData()`, and field label methods
+- `TableExportOptions` value object passed through the export pipeline
+- `formatStates()` overrides for per-column export formatting
+- `extraViewData()` for PDF and preview Blade templates
+
+### Changed
+- Action-level settings override global config (config remains the default fallback)
+- `disableTableColumns()` exports only columns from `withColumns()`
+
+## [0.2.1] - 2026-06-19
+
+### Fixed
+- Resolve panel plugin limits using the plugin ID instead of the class name
+
 ## [0.2.0] - 2026-06-19
 
 ### Added
@@ -32,6 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - English and German translations
 - OpenSpout dependency for upcoming spreadsheet exports
 
-[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.3.0
+[0.2.1]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.2.1
 [0.2.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.2.0
 [0.1.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.1.0

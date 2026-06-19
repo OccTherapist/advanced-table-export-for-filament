@@ -21,12 +21,14 @@ class PdfTableExporter
         array $rows,
         string $orientation = 'landscape',
         ?string $title = null,
+        array $extraViewData = [],
     ): StreamedResponse {
         $html = view('advanced-table-export-for-filament::pdf.table', [
             'headers' => $headers,
             'rows' => $rows,
             'title' => $title,
             'orientation' => $orientation,
+            ...$extraViewData,
         ])->render();
 
         $base64Pdf = $this->pdfRenderer->render($html, $fileName, [

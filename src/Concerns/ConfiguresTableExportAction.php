@@ -2,7 +2,6 @@
 
 namespace OccTherapist\AdvancedTableExportForFilament\Concerns;
 
-use Closure;
 use Filament\Actions\Action as FormAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
@@ -13,42 +12,24 @@ use Filament\Schemas\Components\Html;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Tables\Columns\Column;
+use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
-use OccTherapist\AdvancedTableExportForFilament\AdvancedTableExportForFilamentPlugin;
+use OccTherapist\AdvancedTableExportForFilament\Data\TableExportOptions;
 use OccTherapist\AdvancedTableExportForFilament\Enums\ExportFormat;
 use OccTherapist\AdvancedTableExportForFilament\Services\TableExportCoordinator;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportColumnCollection;
 
 trait ConfiguresTableExportAction
 {
+    use InteractsWithTableExportOptions;
+
     protected bool $usesSelectedRecords = false;
-
-    /** @var array<int, Column> */
-    protected array $additionalExportColumns = [];
-
-    protected ?Closure $modifyExportQueryUsing = null;
-
-    /**
-     * @param  array<int, Column>  $columns
-     */
-    public function withColumns(array $columns): static
-    {
-        $this->additionalExportColumns = $columns;
-
-        return $this;
-    }
-
-    public function modifyExportQueryUsing(?Closure $callback): static
-    {
-        $this->modifyExportQueryUsing = $callback;
-
-        return $this;
-    }
 
     protected function configureTableExportAction(bool $usesSelectedRecords): void
     {
         $this->usesSelectedRecords = $usesSelectedRecords;
+
+        $options = fn (): TableExportOptions => $this->getTableExportOptions($usesSelectedRecords);
 
         $this
             ->label(__('advanced-table-export-for-filament::export.action_label'))
@@ -56,34 +37,57 @@ trait ConfiguresTableExportAction
             ->modalHeading(__('advanced-table-export-for-filament::export.modal_heading'))
             ->modalSubmitActionLabel(__('advanced-table-export-for-filament::export.submit'))
             ->modalWidth('7xl')
-            ->fillForm(fn (): array => [
-                'format' => config('advanced-table-export-for-filament.default_format', ExportFormat::Xlsx->value),
-                'page_orientation' => config('advanced-table-export-for-filament.default_page_orientation', 'landscape'),
-                'preview_page' => 1,
-                'enabled_columns' => array_keys($this->getExportableColumnOptions()),
-            ])
-            ->schema(fn (): array => $this->getExportFormSchema())
-            ->action(function (array $data, TableExportCoordinator $coordinator) {
+            ->fillForm(fn (): array => $this->getDefaultExportFormData($options()))
+            ->schema(fn (): array => $this->getExportFormSchema($options()))
+            ->action(function (array $data, TableExportCoordinator $coordinator) use ($options) {
+                $exportOptions = $options();
+
+                if ($this->shouldDirectDownload()) {
+                    $data = array_merge($this->getDefaultExportFormData($exportOptions), $data);
+                }
+
                 return $coordinator->handle(
                     action: $this,
                     data: $data,
-                    usesSelectedRecords: $this->usesSelectedRecords,
-                    additionalColumns: $this->additionalExportColumns,
-                    modifyExportQueryUsing: $this->modifyExportQueryUsing,
-                    maxPdfRows: $this->getMaxPdfRows(),
-                    maxExportRows: $this->getMaxExportRows(),
+                    options: $exportOptions,
                 );
             });
+
+        if ($this->shouldDirectDownload()) {
+            $this->modal(false);
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getDefaultExportFormData(TableExportOptions $options): array
+    {
+        $table = $this->getTable();
+
+        $enabledColumns = $table instanceof Table
+            ? ($options->disableFilterColumns
+                ? $options->resolveDefaultEnabledColumnNames($table)
+                : $options->resolvePickerColumnNames($table))
+            : [];
+
+        return [
+            'format' => $options->resolveFormat($options->defaultFormat->value)->value,
+            'page_orientation' => $options->defaultPageOrientation,
+            'preview_page' => 1,
+            'enabled_columns' => $enabledColumns,
+            'file_name' => $options->defaultFileName,
+        ];
     }
 
     /**
      * @return array<int, mixed>
      */
-    protected function getExportFormSchema(): array
+    protected function getExportFormSchema(TableExportOptions $options): array
     {
-        $schema = $this->getExportOptionsSchema();
+        $schema = $this->getExportOptionsSchema($options);
 
-        if (! config('advanced-table-export-for-filament.disable_preview')) {
+        if (! $options->disablePreview) {
             $schema[] = Section::make(__('advanced-table-export-for-filament::export.preview'))
                 ->schema([
                     Hidden::make('preview_page')->default(1)->live(),
@@ -101,7 +105,7 @@ trait ConfiguresTableExportAction
                                 $set('preview_page', (int) $get('preview_page') + 1);
                             }),
                     ]),
-                    Html::make(function (Get $get, TableExportCoordinator $coordinator): HtmlString {
+                    Html::make(function (Get $get, TableExportCoordinator $coordinator) use ($options): HtmlString {
                         return new HtmlString(view('advanced-table-export-for-filament::export-preview', $coordinator->preview(
                             action: $this,
                             data: [
@@ -111,10 +115,7 @@ trait ConfiguresTableExportAction
                                 'enabled_columns' => $get('enabled_columns'),
                                 'file_name' => $get('file_name'),
                             ],
-                            usesSelectedRecords: $this->usesSelectedRecords,
-                            additionalColumns: $this->additionalExportColumns,
-                            modifyExportQueryUsing: $this->modifyExportQueryUsing,
-                            previewPerPage: $this->getPreviewPerPage(),
+                            options: $options,
                         ))->render());
                     })
                         ->columnSpanFull(),
@@ -128,36 +129,37 @@ trait ConfiguresTableExportAction
     /**
      * @return array<int, mixed>
      */
-    protected function getExportOptionsSchema(): array
+    protected function getExportOptionsSchema(TableExportOptions $options): array
     {
         $schema = [
             Radio::make('format')
-                ->label(__('advanced-table-export-for-filament::export.format'))
-                ->options(ExportFormat::class)
-                ->default(config('advanced-table-export-for-filament.default_format', ExportFormat::Xlsx->value))
+                ->label($options->formatFieldLabel ?? __('advanced-table-export-for-filament::export.format'))
+                ->options($options->availableFormatOptions())
+                ->default($options->defaultFormat->value)
                 ->required()
                 ->live()
                 ->afterStateUpdated(fn (Set $set) => $set('preview_page', 1)),
             Radio::make('page_orientation')
-                ->label(__('advanced-table-export-for-filament::export.orientation'))
+                ->label($options->pageOrientationFieldLabel ?? __('advanced-table-export-for-filament::export.orientation'))
                 ->options([
                     'landscape' => __('advanced-table-export-for-filament::export.landscape'),
                     'portrait' => __('advanced-table-export-for-filament::export.portrait'),
                 ])
-                ->default(config('advanced-table-export-for-filament.default_page_orientation', 'landscape'))
+                ->default($options->defaultPageOrientation)
                 ->visible(fn (Get $get): bool => $get('format') === ExportFormat::Pdf->value),
         ];
 
-        if (! config('advanced-table-export-for-filament.disable_file_name')) {
+        if (! $options->disableFileName) {
             $schema[] = TextInput::make('file_name')
-                ->label(__('advanced-table-export-for-filament::export.file_name'))
+                ->label($options->fileNameFieldLabel ?? __('advanced-table-export-for-filament::export.file_name'))
+                ->default($options->defaultFileName)
                 ->maxLength(255);
         }
 
-        if (! config('advanced-table-export-for-filament.disable_filter_columns')) {
+        if (! $options->disableFilterColumns) {
             $schema[] = CheckboxList::make('enabled_columns')
-                ->label(__('advanced-table-export-for-filament::export.columns'))
-                ->options(fn (): array => $this->getExportableColumnOptions())
+                ->label($options->filterColumnsFieldLabel ?? __('advanced-table-export-for-filament::export.columns'))
+                ->options(fn (): array => $this->getExportableColumnOptions($options))
                 ->columns(2)
                 ->live()
                 ->afterStateUpdated(fn (Set $set) => $set('preview_page', 1));
@@ -169,7 +171,7 @@ trait ConfiguresTableExportAction
     /**
      * @return array<string, string>
      */
-    protected function getExportableColumnOptions(): array
+    protected function getExportableColumnOptions(TableExportOptions $options): array
     {
         $table = $this->getTable();
 
@@ -180,43 +182,11 @@ trait ConfiguresTableExportAction
         return ExportColumnCollection::labels(
             ExportColumnCollection::resolve(
                 table: $table,
-                additionalColumns: $this->additionalExportColumns,
+                additionalColumns: $options->additionalColumns,
                 enabledColumnNames: null,
                 includeHiddenColumns: true,
+                disableTableColumns: $options->disableTableColumns,
             ),
         );
-    }
-
-    protected function getMaxPdfRows(): int
-    {
-        $plugin = filament()->getCurrentPanel()?->getPlugin(AdvancedTableExportForFilamentPlugin::class);
-
-        if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
-            return $plugin->getMaxPdfRows();
-        }
-
-        return (int) config('advanced-table-export-for-filament.max_pdf_rows', 200);
-    }
-
-    protected function getMaxExportRows(): int
-    {
-        $plugin = filament()->getCurrentPanel()?->getPlugin(AdvancedTableExportForFilamentPlugin::class);
-
-        if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
-            return $plugin->getMaxExportRows();
-        }
-
-        return (int) config('advanced-table-export-for-filament.max_export_rows', 2000);
-    }
-
-    protected function getPreviewPerPage(): int
-    {
-        $plugin = filament()->getCurrentPanel()?->getPlugin(AdvancedTableExportForFilamentPlugin::class);
-
-        if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
-            return $plugin->getPreviewPerPage();
-        }
-
-        return (int) config('advanced-table-export-for-filament.preview_per_page', 25);
     }
 }

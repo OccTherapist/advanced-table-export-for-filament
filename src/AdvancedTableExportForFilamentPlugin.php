@@ -10,6 +10,8 @@ class AdvancedTableExportForFilamentPlugin implements Plugin
 {
     use InteractsWithAdvancedTableExportPlugin;
 
+    public const ID = 'advanced-table-export-for-filament';
+
     public static function make(): static
     {
         return app(static::class);
@@ -17,7 +19,7 @@ class AdvancedTableExportForFilamentPlugin implements Plugin
 
     public function getId(): string
     {
-        return 'advanced-table-export-for-filament';
+        return self::ID;
     }
 
     public function register(Panel $panel): void

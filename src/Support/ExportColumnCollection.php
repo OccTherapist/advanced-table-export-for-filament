@@ -17,7 +17,12 @@ class ExportColumnCollection
         array $additionalColumns = [],
         ?array $enabledColumnNames = null,
         bool $includeHiddenColumns = false,
+        bool $disableTableColumns = false,
     ): Collection {
+        if ($disableTableColumns) {
+            return collect($additionalColumns)->values();
+        }
+
         $useAllColumns = $includeHiddenColumns || $enabledColumnNames !== null;
 
         $columns = collect($useAllColumns ? $table->getColumns() : $table->getVisibleColumns());
