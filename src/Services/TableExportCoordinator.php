@@ -17,6 +17,7 @@ use OccTherapist\AdvancedTableExportForFilament\Exports\PdfTableExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\XlsxExporter;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportColumnCollection;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportRowBuilder;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class TableExportCoordinator
@@ -32,7 +33,7 @@ class TableExportCoordinator
      * @param  array<int, mixed>  $additionalColumns
      */
     public function handle(
-        Action | BulkAction $action,
+        Action|BulkAction $action,
         array $data,
         bool $usesSelectedRecords,
         array $additionalColumns = [],
@@ -70,7 +71,8 @@ class TableExportCoordinator
             return null;
         }
 
-        $format = ExportFormat::from($data['format'] ?? ExportFormat::Xlsx->value);
+        $format = $data['format'] ?? ExportFormat::Xlsx->value;
+        $format = $format instanceof ExportFormat ? $format : ExportFormat::from((string) $format);
         $limit = $format === ExportFormat::Pdf ? $maxPdfRows : $maxExportRows;
 
         if ($records->count() > $limit) {
@@ -110,17 +112,34 @@ class TableExportCoordinator
         $rows = ExportRowBuilder::build($table, $columns, $records);
         $fileName = $this->resolveFileName($data['file_name'] ?? null, $table);
 
-        return match ($format) {
-            ExportFormat::Csv => $this->csvExporter->download($fileName, $headerLabels, $rows),
-            ExportFormat::Xlsx => $this->xlsxExporter->download($fileName, $headerLabels, $rows),
-            ExportFormat::Pdf => $this->pdfTableExporter->download(
-                fileName: $fileName,
-                headers: $headerLabels,
-                rows: $rows,
-                orientation: $data['page_orientation'] ?? config('advanced-table-export-for-filament.default_page_orientation', 'landscape'),
-                title: $table->getHeading(),
-            ),
-        };
+        try {
+            return match ($format) {
+                ExportFormat::Csv => $this->csvExporter->download(
+                    fileName: $fileName,
+                    headers: $headerLabels,
+                    rows: $rows,
+                    delimiter: (string) config('advanced-table-export-for-filament.csv_delimiter', ','),
+                ),
+                ExportFormat::Xlsx => $this->xlsxExporter->download($fileName, $headerLabels, $rows),
+                ExportFormat::Pdf => $this->pdfTableExporter->download(
+                    fileName: $fileName,
+                    headers: $headerLabels,
+                    rows: $rows,
+                    orientation: $data['page_orientation'] ?? config('advanced-table-export-for-filament.default_page_orientation', 'landscape'),
+                    title: $table->getHeading(),
+                ),
+            };
+        } catch (RuntimeException $exception) {
+            Notification::make()
+                ->title(__('advanced-table-export-for-filament::export.export_failed_title'))
+                ->body($exception->getMessage())
+                ->danger()
+                ->send();
+
+            $action->halt();
+
+            return null;
+        }
     }
 
     /**
@@ -136,7 +155,7 @@ class TableExportCoordinator
      * }
      */
     public function preview(
-        Action | BulkAction $action,
+        Action|BulkAction $action,
         array $data,
         bool $usesSelectedRecords,
         array $additionalColumns = [],
@@ -211,7 +230,7 @@ class TableExportCoordinator
     }
 
     protected function resolveRecords(
-        Action | BulkAction $action,
+        Action|BulkAction $action,
         bool $usesSelectedRecords,
         ?Closure $modifyExportQueryUsing = null,
         ?int $page = null,
@@ -241,7 +260,7 @@ class TableExportCoordinator
     }
 
     protected function resolveRecordCount(
-        Action | BulkAction $action,
+        Action|BulkAction $action,
         bool $usesSelectedRecords,
         ?Closure $modifyExportQueryUsing = null,
     ): int {
@@ -255,7 +274,7 @@ class TableExportCoordinator
     }
 
     protected function resolveQuery(
-        Action | BulkAction $action,
+        Action|BulkAction $action,
         ?Closure $modifyExportQueryUsing = null,
     ): ?Builder {
         $livewire = $action->getLivewire();
@@ -264,11 +283,7 @@ class TableExportCoordinator
             return null;
         }
 
-        $query = $livewire->getFilteredTableQuery();
-
-        if ($query === null) {
-            return null;
-        }
+        $query = $livewire->getTableQueryForExport();
 
         if ($modifyExportQueryUsing !== null) {
             $query = $modifyExportQueryUsing($query) ?? $query;

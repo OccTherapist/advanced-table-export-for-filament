@@ -17,5 +17,6 @@ return [
     'preview_per_page' => 25,
     'max_pdf_rows' => 200,
     'max_export_rows' => 2000,
+    'csv_delimiter' => ',',
     'pdf_renderer' => env('ADVANCED_TABLE_EXPORT_PDF_RENDERER', 'null'),
 ];

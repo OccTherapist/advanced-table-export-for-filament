@@ -7,10 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-19
+
 ### Added
-- CSV, XLSX, and PDF export execution
+- CSV, XLSX, and PDF export execution via `TableExportCoordinator`
 - Paginated export preview in the modal
-- Column resolution from table state
+- Column resolution from table state (including hidden columns when selected)
+- OpenSpout-based CSV/XLSX streaming downloads
+- PDF table rendering via configurable `PdfRenderer` drivers
+
+### Changed
+- Export modal is fully functional (replaces v0.1.0 stub)
 
 ## [0.1.0] - 2026-06-19
 
@@ -25,5 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - English and German translations
 - OpenSpout dependency for upcoming spreadsheet exports
 
-[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.2.0
 [0.1.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.1.0

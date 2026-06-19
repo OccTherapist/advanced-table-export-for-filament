@@ -9,8 +9,6 @@
 
 Built for **Filament v4 and v5** on **Laravel 11/12**. A modern, actively maintained successor to the export workflow many teams relied on with [`alperenersoy/filament-export`](https://github.com/alperenersoy/filament-export).
 
-> **Early access:** v0.1.0 ships the plugin, actions, configuration, and PDF driver architecture. Full export execution lands in **v0.2.0** — [watch the repo](https://github.com/OccTherapist/advanced-table-export-for-filament) to get notified.
-
 ---
 
 ## Why this package?
@@ -42,7 +40,7 @@ Filament's [native export action](https://filamentphp.com/docs/actions/export) i
 - **Row limits** — configurable caps for PDF and spreadsheet exports
 - **Panel plugin** — central limits and defaults per Filament panel
 - **i18n** — English and German translations out of the box
-- **Preview UI** — modal section ready for paginated preview (v0.2.0)
+- **Preview UI** — paginated preview in the export modal
 
 ---
 
@@ -94,18 +92,25 @@ Add the actions to any table:
 ```php
 use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportBulkAction;
 use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportHeaderAction;
+use Filament\Tables\Columns\TextColumn;
 
 public function table(Table $table): Table
 {
     return $table
         ->headerActions([
-            TableExportHeaderAction::make(),
+            TableExportHeaderAction::make()
+                ->modifyExportQueryUsing(fn ($query) => $query->where('is_active', true)),
         ])
         ->toolbarActions([
-            TableExportBulkAction::make(),
+            TableExportBulkAction::make()
+                ->withColumns([
+                    TextColumn::make('internal_notes')->label('Notes'),
+                ]),
         ]);
 }
 ```
+
+`TableExportHeaderAction` exports the filtered, sorted, and searched table query. `TableExportBulkAction` exports only the selected rows. Use `withColumns()` to include extra model columns that are not visible in the table.
 
 Publish the config (optional):
 
@@ -132,6 +137,7 @@ All options live in `config/advanced-table-export-for-filament.php`:
 | `time_format` | `M_d_Y-H_i` | Timestamp suffix for generated filenames |
 | `max_pdf_rows` | `200` | Max rows for PDF exports |
 | `max_export_rows` | `2000` | Max rows for CSV/XLSX exports |
+| `csv_delimiter` | `,` | CSV field delimiter |
 | `pdf_renderer` | `null` | PDF driver: `sidecar`, `browsershot`, `dompdf`, `null` |
 | `disable_preview` | `false` | Hide preview section in modal |
 | `disable_filter_columns` | `false` | Hide column picker |
@@ -198,8 +204,7 @@ Many `disable*` options from the original package map directly to config keys (s
 
 | Version | Focus |
 |---------|-------|
-| **v0.1.0** *(current)* | Plugin, actions, modal UI, config, PDF driver interface, translations |
-| **v0.2.0** | CSV/XLSX/PDF export execution, paginated preview, column resolution |
+| **v0.2.0** *(current)* | CSV/XLSX/PDF export execution, paginated preview, column resolution |
 | **v0.3.0** | Action fluent API (`disablePdf()`, `withColumns()`, `directDownload()`, …) |
 
 Star or watch the repository to follow progress: [github.com/OccTherapist/advanced-table-export-for-filament](https://github.com/OccTherapist/advanced-table-export-for-filament)

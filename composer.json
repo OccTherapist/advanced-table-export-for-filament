@@ -18,7 +18,7 @@
     ],
     "homepage": "https://github.com/OccTherapist/advanced-table-export-for-filament",
     "license": "MIT",
-    "type": "library",
+    "version": "0.2.0",
     "authors": [
         {
             "name": "Igor Clauss",
@@ -40,13 +40,15 @@
     },
     "require-dev": {
         "laravel/pint": "^1.22",
+        "mockery/mockery": "^1.6",
         "orchestra/testbench": "^10.0",
         "phpunit/phpunit": "^11.0"
     },
     "suggest": {
         "spatie/laravel-pdf": "Required for PDF rendering drivers.",
         "spatie/browsershot": "Required for local Browsershot PDF rendering.",
-        "wnx/sidecar-browsershot": "Required for Sidecar Browsershot PDF rendering."
+        "wnx/sidecar-browsershot": "Required for Sidecar Browsershot PDF rendering.",
+        "dompdf/dompdf": "Required for Dompdf PDF rendering."
     },
     "autoload": {
         "psr-4": {
@@ -73,7 +75,8 @@
     },
     "scripts": {
         "lint": "pint",
-        "lint:check": "pint --test"
+        "lint:check": "pint --test",
+        "test": "phpunit"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

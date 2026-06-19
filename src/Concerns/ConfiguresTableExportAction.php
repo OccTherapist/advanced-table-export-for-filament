@@ -3,17 +3,19 @@
 namespace OccTherapist\AdvancedTableExportForFilament\Concerns;
 
 use Closure;
-use Filament\Actions\Action;
+use Filament\Actions\Action as FormAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Actions as FormActions;
+use Filament\Schemas\Components\Html;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Components\View;
 use Filament\Tables\Columns\Column;
+use Illuminate\Support\HtmlString;
+use OccTherapist\AdvancedTableExportForFilament\AdvancedTableExportForFilamentPlugin;
 use OccTherapist\AdvancedTableExportForFilament\Enums\ExportFormat;
 use OccTherapist\AdvancedTableExportForFilament\Services\TableExportCoordinator;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportColumnCollection;
@@ -86,28 +88,35 @@ trait ConfiguresTableExportAction
                 ->schema([
                     Hidden::make('preview_page')->default(1)->live(),
                     FormActions::make([
-                        Action::make('previewPrevious')
+                        FormAction::make('previewPrevious')
                             ->label(__('advanced-table-export-for-filament::export.preview_previous'))
                             ->color('gray')
                             ->action(function (Get $get, Set $set): void {
                                 $set('preview_page', max(1, (int) $get('preview_page') - 1));
                             }),
-                        Action::make('previewNext')
+                        FormAction::make('previewNext')
                             ->label(__('advanced-table-export-for-filament::export.preview_next'))
                             ->color('gray')
                             ->action(function (Get $get, Set $set): void {
                                 $set('preview_page', (int) $get('preview_page') + 1);
                             }),
                     ]),
-                    View::make('advanced-table-export-for-filament::export-preview')
-                        ->viewData(fn (Get $get, TableExportCoordinator $coordinator): array => $coordinator->preview(
+                    Html::make(function (Get $get, TableExportCoordinator $coordinator): HtmlString {
+                        return new HtmlString(view('advanced-table-export-for-filament::export-preview', $coordinator->preview(
                             action: $this,
-                            data: $get->all(),
+                            data: [
+                                'format' => $get('format'),
+                                'page_orientation' => $get('page_orientation'),
+                                'preview_page' => $get('preview_page'),
+                                'enabled_columns' => $get('enabled_columns'),
+                                'file_name' => $get('file_name'),
+                            ],
                             usesSelectedRecords: $this->usesSelectedRecords,
                             additionalColumns: $this->additionalExportColumns,
                             modifyExportQueryUsing: $this->modifyExportQueryUsing,
                             previewPerPage: $this->getPreviewPerPage(),
-                        ))
+                        ))->render());
+                    })
                         ->columnSpanFull(),
                 ])
                 ->columnSpanFull();
@@ -172,22 +181,42 @@ trait ConfiguresTableExportAction
             ExportColumnCollection::resolve(
                 table: $table,
                 additionalColumns: $this->additionalExportColumns,
+                enabledColumnNames: null,
+                includeHiddenColumns: true,
             ),
         );
     }
 
     protected function getMaxPdfRows(): int
     {
+        $plugin = filament()->getCurrentPanel()?->getPlugin(AdvancedTableExportForFilamentPlugin::class);
+
+        if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
+            return $plugin->getMaxPdfRows();
+        }
+
         return (int) config('advanced-table-export-for-filament.max_pdf_rows', 200);
     }
 
     protected function getMaxExportRows(): int
     {
+        $plugin = filament()->getCurrentPanel()?->getPlugin(AdvancedTableExportForFilamentPlugin::class);
+
+        if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
+            return $plugin->getMaxExportRows();
+        }
+
         return (int) config('advanced-table-export-for-filament.max_export_rows', 2000);
     }
 
     protected function getPreviewPerPage(): int
     {
+        $plugin = filament()->getCurrentPanel()?->getPlugin(AdvancedTableExportForFilamentPlugin::class);
+
+        if ($plugin instanceof AdvancedTableExportForFilamentPlugin) {
+            return $plugin->getPreviewPerPage();
+        }
+
         return (int) config('advanced-table-export-for-filament.preview_per_page', 25);
     }
 }

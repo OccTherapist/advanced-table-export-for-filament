@@ -4,7 +4,11 @@ namespace OccTherapist\AdvancedTableExportForFilament;
 
 use Illuminate\Support\ServiceProvider;
 use OccTherapist\AdvancedTableExportForFilament\Contracts\PdfRenderer;
+use OccTherapist\AdvancedTableExportForFilament\Exports\CsvExporter;
+use OccTherapist\AdvancedTableExportForFilament\Exports\PdfTableExporter;
+use OccTherapist\AdvancedTableExportForFilament\Exports\XlsxExporter;
 use OccTherapist\AdvancedTableExportForFilament\Pdf\NullPdfRenderer;
+use OccTherapist\AdvancedTableExportForFilament\Services\TableExportCoordinator;
 
 class AdvancedTableExportForFilamentServiceProvider extends ServiceProvider
 {
@@ -14,6 +18,11 @@ class AdvancedTableExportForFilamentServiceProvider extends ServiceProvider
             __DIR__.'/../config/advanced-table-export-for-filament.php',
             'advanced-table-export-for-filament'
         );
+
+        $this->app->singleton(CsvExporter::class);
+        $this->app->singleton(XlsxExporter::class);
+        $this->app->singleton(PdfTableExporter::class);
+        $this->app->singleton(TableExportCoordinator::class);
 
         $this->app->singleton(PdfRenderer::class, function (): PdfRenderer {
             $driver = config('advanced-table-export-for-filament.pdf_renderer');

@@ -22,7 +22,9 @@ class AdvancedTableExportForFilamentPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        //
+        $this->maxPdfRows = (int) config('advanced-table-export-for-filament.max_pdf_rows', $this->maxPdfRows);
+        $this->maxExportRows = (int) config('advanced-table-export-for-filament.max_export_rows', $this->maxExportRows);
+        $this->previewPerPage = (int) config('advanced-table-export-for-filament.preview_per_page', $this->previewPerPage);
     }
 
     public function boot(Panel $panel): void
