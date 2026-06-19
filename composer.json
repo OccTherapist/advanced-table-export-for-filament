@@ -1,0 +1,64 @@
+{
+    "name": "occtherapist/advanced-table-export-for-filament",
+    "description": "Customizable export and print functionality for Filament admin tables.",
+    "keywords": [
+        "filament",
+        "laravel",
+        "export",
+        "print",
+        "pdf",
+        "csv",
+        "xlsx"
+    ],
+    "homepage": "https://github.com/OccTherapist/advanced-table-export-for-filament",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Igor Clauss",
+            "homepage": "https://github.com/OccTherapist"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^4.0|^5.0",
+        "illuminate/contracts": "^11.0|^12.0",
+        "illuminate/support": "^11.0|^12.0",
+        "openspout/openspout": "^4.28"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.22",
+        "orchestra/testbench": "^10.0",
+        "phpunit/phpunit": "^11.0"
+    },
+    "suggest": {
+        "spatie/laravel-pdf": "Required for PDF rendering drivers.",
+        "spatie/browsershot": "Required for local Browsershot PDF rendering.",
+        "wnx/sidecar-browsershot": "Required for Sidecar Browsershot PDF rendering."
+    },
+    "autoload": {
+        "psr-4": {
+            "OccTherapist\\AdvancedTableExportForFilament\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "OccTherapist\\AdvancedTableExportForFilament\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "OccTherapist\\AdvancedTableExportForFilament\\AdvancedTableExportForFilamentServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
