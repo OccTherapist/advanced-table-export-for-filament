@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/occtherapist/advanced-table-export-for-filament.svg?style=flat-square)](https://packagist.org/packages/occtherapist/advanced-table-export-for-filament)
 [![Total Downloads](https://img.shields.io/packagist/dt/occtherapist/advanced-table-export-for-filament.svg?style=flat-square)](https://packagist.org/packages/occtherapist/advanced-table-export-for-filament)
-[![License](https://img.shields.io/packagist/l/occtherapist/advanced-table-export-for-filament.svg?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/github/license/OccTherapist/advanced-table-export-for-filament?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/occtherapist/advanced-table-export-for-filament.svg?style=flat-square)](https://packagist.org/packages/occtherapist/advanced-table-export-for-filament)
 
 **Export and print Filament admin tables in seconds** — CSV, XLSX, and PDF with column selection, preview, and flexible PDF drivers.
