@@ -41,10 +41,21 @@ class AdvancedTableExportForFilamentServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'advanced-table-export-for-filament');
         $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'advanced-table-export-for-filament');
 
+        $publishedViewsPath = resource_path('views/vendor/advanced-table-export-for-filament');
+
+        if (is_dir($publishedViewsPath)) {
+            $this->loadViewsFrom($publishedViewsPath, 'advanced-table-export-for-filament');
+        }
+
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../config/advanced-table-export-for-filament.php' => config_path('advanced-table-export-for-filament.php'),
             ], 'advanced-table-export-for-filament-config');
+
+            $this->publishes([
+                __DIR__.'/../resources/views/export-preview.blade.php' => resource_path('views/vendor/advanced-table-export-for-filament/export-preview.blade.php'),
+                __DIR__.'/../resources/views/pdf/table.blade.php' => resource_path('views/vendor/advanced-table-export-for-filament/pdf/table.blade.php'),
+            ], 'advanced-table-export-for-filament-views');
         }
     }
 }

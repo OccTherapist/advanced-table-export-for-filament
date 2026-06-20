@@ -42,6 +42,10 @@ readonly class TableExportOptions
         public ?string $formatFieldLabel,
         public ?string $pageOrientationFieldLabel,
         public ?string $filterColumnsFieldLabel,
+        public ?Closure $modifyPdfHtml = null,
+        public ?Closure $modifyDompdfWriter = null,
+        public ?Closure $modifyXlsxWriter = null,
+        public ?Closure $modifyCsvWriter = null,
     ) {}
 
     /**

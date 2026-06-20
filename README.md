@@ -118,6 +118,14 @@ Publish the config (optional):
 php artisan vendor:publish --tag=advanced-table-export-for-filament-config
 ```
 
+Publish Blade views for PDF and preview customization (optional):
+
+```bash
+php artisan vendor:publish --tag=advanced-table-export-for-filament-views
+```
+
+This copies templates to `resources/views/vendor/advanced-table-export-for-filament/`. Published views override the package defaults automatically.
+
 Set your PDF driver in `.env`:
 
 ```env
@@ -252,8 +260,35 @@ TableExportHeaderAction::make()
 | `formatStates()` | Override exported values per column |
 | `extraViewData()` | Extra variables for PDF/preview Blade views |
 | `modifyExportQueryUsing()` | Modify the export query before fetching records |
+| `modifyPdfHtml()` | Modify rendered PDF HTML before conversion (all PDF drivers) |
+| `modifyDompdfWriter()` | Customize the Dompdf instance when using the `dompdf` driver |
+| `modifyXlsxWriter()` | Customize the OpenSpout XLSX writer (sheet name, etc.) |
+| `modifyCsvWriter()` | Customize OpenSpout CSV options (delimiter, BOM) before export |
 
 Action-level settings override global config values.
+
+### Writer hooks
+
+```php
+use OpenSpout\Writer\CSV\Options;
+use OpenSpout\Writer\XLSX\Writer as XlsxWriter;
+
+TableExportHeaderAction::make()
+    ->modifyPdfHtml(fn (string $html, array $context): string => $html.'<footer>Okidoki</footer>')
+    ->modifyDompdfWriter(fn (\Dompdf\Dompdf $dompdf, array $context) => $dompdf->setPaper('A4', 'landscape'))
+    ->modifyXlsxWriter(fn (XlsxWriter $writer, array $context) => $writer->getCurrentSheet()->setName('Export'))
+    ->modifyCsvWriter(fn (Options $options, array $context) => $options->FIELD_DELIMITER = '|');
+```
+
+Each hook receives a `$context` array: `fileName`, `headers`, `rows`, `rowCount`, `format`, and `orientation` (PDF only).
+
+### Custom Blade views
+
+```bash
+php artisan vendor:publish --tag=advanced-table-export-for-filament-views
+```
+
+Edit `resources/views/vendor/advanced-table-export-for-filament/pdf/table.blade.php` or `export-preview.blade.php`. Combine with `extraViewData()` to pass custom variables into the templates.
 
 ---
 
@@ -261,8 +296,20 @@ Action-level settings override global config values.
 
 | Version | Focus |
 |---------|-------|
-| **v0.3.0** *(current)* | Fluent action API, `directDownload()`, `formatStates()`, `extraViewData()` |
-| **v0.4.0** | Custom PDF/preview Blade publishing, writer hooks |
+| **v0.4.0** *(current)* | Publishable views, writer hooks (`modifyPdfHtml`, `modifyDompdfWriter`, `modifyXlsxWriter`, `modifyCsvWriter`) |
+| **v0.x** | Further 0.x releases as needed |
+| **v1.0** | API freeze + hardening when production checklist is green (see below) |
+| **v1.1+** | End-user additional-columns UI |
+
+### Path to v1.0
+
+v1.0 ships when all criteria are met — not as the immediate next release:
+
+1. Feature parity for your production use case (documented gaps OK)
+2. At least one production project stable for 4+ weeks without vendor patches
+3. Filament plugin listing approved
+4. Test suite covers export pipeline and hooks
+5. Upgrade guide from `filament-export` in README
 
 Star or watch the repository to follow progress: [github.com/OccTherapist/advanced-table-export-for-filament](https://github.com/OccTherapist/advanced-table-export-for-filament)
 

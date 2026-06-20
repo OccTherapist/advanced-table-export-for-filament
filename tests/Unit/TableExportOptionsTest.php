@@ -66,6 +66,10 @@ class TableExportOptionsTest extends TestCase
             formatFieldLabel: null,
             pageOrientationFieldLabel: null,
             filterColumnsFieldLabel: null,
+            modifyPdfHtml: null,
+            modifyDompdfWriter: null,
+            modifyXlsxWriter: null,
+            modifyCsvWriter: null,
         );
     }
 }

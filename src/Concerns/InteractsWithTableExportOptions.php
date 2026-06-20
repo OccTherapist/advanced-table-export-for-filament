@@ -60,6 +60,14 @@ trait InteractsWithTableExportOptions
 
     protected ?string $filterColumnsFieldLabel = null;
 
+    protected ?Closure $modifyPdfHtml = null;
+
+    protected ?Closure $modifyDompdfWriter = null;
+
+    protected ?Closure $modifyXlsxWriter = null;
+
+    protected ?Closure $modifyCsvWriter = null;
+
     /**
      * @param  array<int, Column>  $columns
      */
@@ -230,6 +238,34 @@ trait InteractsWithTableExportOptions
         return $this;
     }
 
+    public function modifyPdfHtml(?Closure $callback): static
+    {
+        $this->modifyPdfHtml = $callback;
+
+        return $this;
+    }
+
+    public function modifyDompdfWriter(?Closure $callback): static
+    {
+        $this->modifyDompdfWriter = $callback;
+
+        return $this;
+    }
+
+    public function modifyXlsxWriter(?Closure $callback): static
+    {
+        $this->modifyXlsxWriter = $callback;
+
+        return $this;
+    }
+
+    public function modifyCsvWriter(?Closure $callback): static
+    {
+        $this->modifyCsvWriter = $callback;
+
+        return $this;
+    }
+
     public function shouldDirectDownload(): bool
     {
         return $this->directDownload;
@@ -274,6 +310,10 @@ trait InteractsWithTableExportOptions
             formatFieldLabel: $this->formatFieldLabel,
             pageOrientationFieldLabel: $this->pageOrientationFieldLabel,
             filterColumnsFieldLabel: $this->filterColumnsFieldLabel,
+            modifyPdfHtml: $this->modifyPdfHtml,
+            modifyDompdfWriter: $this->modifyDompdfWriter,
+            modifyXlsxWriter: $this->modifyXlsxWriter,
+            modifyCsvWriter: $this->modifyCsvWriter,
         );
     }
 

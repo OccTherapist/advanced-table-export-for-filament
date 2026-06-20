@@ -106,16 +106,21 @@ class TableExportCoordinator
                     fileName: $fileName,
                     headers: $headerLabels,
                     rows: $rows,
-                    delimiter: $options->getCsvDelimiter(),
+                    options: $options,
                 ),
-                ExportFormat::Xlsx => $this->xlsxExporter->download($fileName, $headerLabels, $rows),
+                ExportFormat::Xlsx => $this->xlsxExporter->download(
+                    fileName: $fileName,
+                    headers: $headerLabels,
+                    rows: $rows,
+                    options: $options,
+                ),
                 ExportFormat::Pdf => $this->pdfTableExporter->download(
                     fileName: $fileName,
                     headers: $headerLabels,
                     rows: $rows,
                     orientation: $data['page_orientation'] ?? $options->defaultPageOrientation,
                     title: $table->getHeading(),
-                    extraViewData: $options->extraViewData,
+                    options: $options,
                 ),
             };
         } catch (RuntimeException $exception) {
