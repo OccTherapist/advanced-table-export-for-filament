@@ -5,6 +5,12 @@
 [![License](https://img.shields.io/github/license/OccTherapist/advanced-table-export-for-filament?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/occtherapist/advanced-table-export-for-filament.svg?style=flat-square)](https://packagist.org/packages/occtherapist/advanced-table-export-for-filament)
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="art/banner-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="art/banner-light.png">
+  <img src="art/banner-light.png" alt="Advanced Table Export for Filament — export tables to XLSX, CSV, PDF, JSON, XML, or clipboard" width="100%">
+</picture>
+
 **Export and print Filament admin tables in seconds** — CSV, XLSX, PDF, JSON, XML, and clipboard with column selection, preview, and flexible PDF drivers.
 
 Built for **Filament v4 and v5** on **Laravel 11/12**. A modern, actively maintained successor to the export workflow many teams relied on with [`alperenersoy/filament-export`](https://github.com/alperenersoy/filament-export).
