@@ -13,7 +13,7 @@
 
 **Export and print Filament admin tables in seconds** — CSV, XLSX, PDF, JSON, XML, and clipboard with column selection, preview, and flexible PDF drivers.
 
-Built for **Filament v4 and v5** on **Laravel 11/12**. A modern, actively maintained successor to the export workflow many teams relied on with [`alperenersoy/filament-export`](https://github.com/alperenersoy/filament-export).
+Built for **Filament v4 and v5** on **Laravel 11, 12, and 13**. A modern, actively maintained successor to the export workflow many teams relied on with [`alperenersoy/filament-export`](https://github.com/alperenersoy/filament-export).
 
 ---
 
@@ -55,7 +55,7 @@ Filament's [native export action](https://filamentphp.com/docs/actions/export) i
 
 - PHP 8.2+
 - [Filament](https://filamentphp.com/) 4 or 5
-- Laravel 11 or 12
+- Laravel 11, 12, or 13
 
 **Optional** (pick one PDF stack):
 
