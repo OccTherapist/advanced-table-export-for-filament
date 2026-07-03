@@ -5,15 +5,20 @@ namespace OccTherapist\AdvancedTableExportForFilament\Data;
 use Closure;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Table;
+use OccTherapist\AdvancedTableExportForFilament\Enums\ClipboardFormat;
 use OccTherapist\AdvancedTableExportForFilament\Enums\ExportFormat;
+use OccTherapist\AdvancedTableExportForFilament\Enums\JsonStructure;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportColumnCollection;
 
 readonly class TableExportOptions
 {
     /**
      * @param  array<int, Column>  $additionalColumns
+     * @param  array<int, ExportFormat>|null  $formats
      * @param  array<string, Closure>  $formatStates
      * @param  array<string, mixed>  $extraViewData
+     * @param  array<string, string>  $formatIcons
+     * @param  array<string, string>  $formatLabels
      */
     public function __construct(
         public bool $usesSelectedRecords,
@@ -21,10 +26,15 @@ readonly class TableExportOptions
         public ?Closure $modifyExportQueryUsing,
         public int $maxPdfRows,
         public int $maxExportRows,
+        public int $maxClipboardRows,
         public int $previewPerPage,
         public bool $disablePdf,
         public bool $disableXlsx,
         public bool $disableCsv,
+        public bool $disableJson,
+        public bool $disableXml,
+        public bool $disableClipboard,
+        public ?array $formats,
         public ExportFormat $defaultFormat,
         public string $defaultPageOrientation,
         public bool $disableFilterColumns,
@@ -36,17 +46,40 @@ readonly class TableExportOptions
         public ?string $defaultFileName,
         public ?string $timeFormat,
         public ?string $csvDelimiter,
+        public JsonStructure $jsonStructure,
+        public bool $prettyJson,
+        public string $xmlRoot,
+        public string $xmlRowTag,
+        public ClipboardFormat $clipboardFormat,
         public array $formatStates,
         public array $extraViewData,
         public ?string $fileNameFieldLabel,
         public ?string $formatFieldLabel,
         public ?string $pageOrientationFieldLabel,
         public ?string $filterColumnsFieldLabel,
+        public ?string $groupLabel,
+        public array $formatIcons,
+        public array $formatLabels,
         public ?Closure $modifyPdfHtml = null,
         public ?Closure $modifyDompdfWriter = null,
         public ?Closure $modifyXlsxWriter = null,
         public ?Closure $modifyCsvWriter = null,
+        public ?Closure $modifyJsonExport = null,
+        public ?Closure $modifyXmlExport = null,
     ) {}
+
+    /**
+     * @return array<int, ExportFormat>
+     */
+    public function availableFormats(): array
+    {
+        $candidates = $this->formats ?? ExportFormat::defaults();
+
+        return array_values(array_filter(
+            $candidates,
+            fn (ExportFormat $format): bool => ! $this->isFormatDisabled($format),
+        ));
+    }
 
     /**
      * @return array<string, string>
@@ -55,12 +88,8 @@ readonly class TableExportOptions
     {
         $options = [];
 
-        foreach (ExportFormat::cases() as $format) {
-            if ($this->isFormatDisabled($format)) {
-                continue;
-            }
-
-            $options[$format->value] = $format->getLabel();
+        foreach ($this->availableFormats() as $format) {
+            $options[$format->value] = $this->resolveFormatLabel($format);
         }
 
         return $options;
@@ -72,6 +101,9 @@ readonly class TableExportOptions
             ExportFormat::Csv => $this->disableCsv,
             ExportFormat::Xlsx => $this->disableXlsx,
             ExportFormat::Pdf => $this->disablePdf,
+            ExportFormat::Json => $this->disableJson,
+            ExportFormat::Xml => $this->disableXml,
+            ExportFormat::Clipboard => $this->disableClipboard,
         };
     }
 
@@ -79,21 +111,43 @@ readonly class TableExportOptions
     {
         $requested = ExportFormat::tryFrom((string) $format);
 
-        if ($requested !== null && ! $this->isFormatDisabled($requested)) {
+        if ($requested !== null && ! $this->isFormatDisabled($requested) && $this->isFormatAllowed($requested)) {
             return $requested;
         }
 
-        if (! $this->isFormatDisabled($this->defaultFormat)) {
+        if (! $this->isFormatDisabled($this->defaultFormat) && $this->isFormatAllowed($this->defaultFormat)) {
             return $this->defaultFormat;
         }
 
-        foreach ([ExportFormat::Xlsx, ExportFormat::Csv, ExportFormat::Pdf] as $candidate) {
-            if (! $this->isFormatDisabled($candidate)) {
-                return $candidate;
-            }
+        foreach ($this->availableFormats() as $candidate) {
+            return $candidate;
         }
 
         return ExportFormat::Xlsx;
+    }
+
+    public function resolveFormatLabel(ExportFormat $format): string
+    {
+        return $this->formatLabels[$format->value] ?? $format->getLabel();
+    }
+
+    public function resolveFormatIcon(ExportFormat $format): string
+    {
+        return $this->formatIcons[$format->value] ?? $format->getDefaultIcon();
+    }
+
+    public function resolveGroupLabel(): string
+    {
+        return $this->groupLabel ?? __('advanced-table-export-for-filament::export.group_label');
+    }
+
+    public function resolveRowLimit(ExportFormat $format): int
+    {
+        return match ($format) {
+            ExportFormat::Pdf => $this->maxPdfRows,
+            ExportFormat::Clipboard => $this->maxClipboardRows,
+            default => $this->maxExportRows,
+        };
     }
 
     /**
@@ -142,5 +196,14 @@ readonly class TableExportOptions
     public function getCsvDelimiter(): string
     {
         return $this->csvDelimiter ?? (string) config('advanced-table-export-for-filament.csv_delimiter', ',');
+    }
+
+    protected function isFormatAllowed(ExportFormat $format): bool
+    {
+        if ($this->formats === null) {
+            return true;
+        }
+
+        return in_array($format, $this->formats, true);
     }
 }

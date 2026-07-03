@@ -12,7 +12,6 @@ use Filament\Schemas\Components\Html;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
 use OccTherapist\AdvancedTableExportForFilament\Data\TableExportOptions;
 use OccTherapist\AdvancedTableExportForFilament\Enums\ExportFormat;
@@ -21,6 +20,7 @@ use OccTherapist\AdvancedTableExportForFilament\Support\ExportColumnCollection;
 
 trait ConfiguresTableExportAction
 {
+    use InteractsWithTableExportFormData;
     use InteractsWithTableExportOptions;
 
     protected bool $usesSelectedRecords = false;
@@ -56,28 +56,6 @@ trait ConfiguresTableExportAction
         if ($this->shouldDirectDownload()) {
             $this->modal(false);
         }
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    protected function getDefaultExportFormData(TableExportOptions $options): array
-    {
-        $table = $this->getTable();
-
-        $enabledColumns = $table instanceof Table
-            ? ($options->disableFilterColumns
-                ? $options->resolveDefaultEnabledColumnNames($table)
-                : $options->resolvePickerColumnNames($table))
-            : [];
-
-        return [
-            'format' => $options->resolveFormat($options->defaultFormat->value)->value,
-            'page_orientation' => $options->defaultPageOrientation,
-            'preview_page' => 1,
-            'enabled_columns' => $enabledColumns,
-            'file_name' => $options->defaultFileName,
-        ];
     }
 
     /**

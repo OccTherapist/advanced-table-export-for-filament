@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-07-03
+
+### Added
+- **JSON, XML, and clipboard** export formats
+- **Quick export actions** via `TableExportQuickHeaderAction` and `TableExportQuickBulkAction` (ActionGroup with one action per format)
+- `formats()` whitelist API on actions and the panel plugin
+- `disableJson()`, `disableXml()`, and `disableClipboard()`
+- `clipboardFormat()` with `ClipboardFormat` enum (`Tsv`, `Csv`, `Json`)
+- `jsonStructure()` with `JsonStructure` enum (`Flat`, `Wrapped`) and `prettyJson()` / `compactJson()`
+- `xmlRoot()` and `xmlRowTag()` for XML structure customization
+- `formatIcon()`, `formatLabel()`, and `groupLabel()` for quick export presentation
+- `modifyJsonExport()` and `modifyXmlExport()` writer hooks
+- `maxClipboardRows()` on the panel plugin (default: 500)
+- Clipboard copy fallback listener for Livewire dispatch
+
+### Changed
+- **Breaking:** all six export formats are enabled by default (CSV, XLSX, PDF, JSON, XML, clipboard)
+- Unified export action label: **Export**
+- Plugin and config can now define default formats, JSON/XML settings, and clipboard format
+
+### Upgrade from 0.4.x
+```php
+TableExportHeaderAction::make()
+    ->formats([
+        ExportFormat::Csv,
+        ExportFormat::Xlsx,
+        ExportFormat::Pdf,
+    ]);
+```
+
 ## [0.4.0] - 2026-06-19
 
 ### Added
@@ -18,7 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Standardized `$context` array passed to all writer hooks
 - Roadmap section documenting the path to v1.0
 
-[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.4.0...v1.0.0
 [0.4.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.4.0
 
 ### Added
@@ -61,7 +92,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - English and German translations
 - OpenSpout dependency for upcoming spreadsheet exports
 
-[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/compare/v0.4.0...v1.0.0
 [0.4.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.4.0
 [0.3.0]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.3.0
 [0.2.1]: https://github.com/OccTherapist/advanced-table-export-for-filament/releases/tag/v0.2.1

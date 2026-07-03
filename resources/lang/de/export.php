@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'action_label' => 'Daten Exportieren',
+    'action_label' => 'Export',
+    'group_label' => 'Tabelle exportieren',
     'modal_heading' => 'Exportieren & Drucken',
     'submit' => 'Ausführen',
     'preview' => 'Vorschau',
@@ -13,9 +14,18 @@ return [
     'columns' => 'Spalten',
     'formats' => [
         'csv' => 'CSV',
-        'xlsx' => 'XLSX',
-        'pdf' => 'PDF drucken',
+        'xlsx' => 'Excel (XLSX)',
+        'pdf' => 'PDF',
+        'json' => 'JSON',
+        'xml' => 'XML',
+        'clipboard' => 'In Zwischenablage kopieren',
     ],
+    'clipboard_formats' => [
+        'tsv' => 'Tab-getrennte Werte',
+        'csv' => 'Komma-getrennte Werte',
+        'json' => 'JSON-Array',
+    ],
+    'copied_to_clipboard' => 'In Zwischenablage kopiert',
     'preview_summary' => 'Zeige :from–:to von :total Einträgen',
     'preview_page' => 'Seite :page von :lastPage',
     'preview_previous' => 'Zurück',

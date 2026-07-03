@@ -3,9 +3,9 @@
 namespace OccTherapist\AdvancedTableExportForFilament\Tests\Unit;
 
 use OccTherapist\AdvancedTableExportForFilament\Data\TableExportOptions;
-use OccTherapist\AdvancedTableExportForFilament\Enums\ExportFormat;
 use OccTherapist\AdvancedTableExportForFilament\Exports\CsvExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\XlsxExporter;
+use OccTherapist\AdvancedTableExportForFilament\Tests\Support\TableExportOptionsFactory;
 use OccTherapist\AdvancedTableExportForFilament\Tests\TestCase;
 use OpenSpout\Writer\CSV\Options;
 use OpenSpout\Writer\XLSX\Writer as XlsxWriter;
@@ -71,37 +71,9 @@ class ExportWriterHooksTest extends TestCase
         ?\Closure $modifyCsvWriter = null,
         ?\Closure $modifyXlsxWriter = null,
     ): TableExportOptions {
-        return new TableExportOptions(
-            usesSelectedRecords: false,
-            additionalColumns: [],
-            modifyExportQueryUsing: null,
-            maxPdfRows: 200,
-            maxExportRows: 2000,
-            previewPerPage: 25,
-            disablePdf: false,
-            disableXlsx: false,
-            disableCsv: false,
-            defaultFormat: ExportFormat::Xlsx,
-            defaultPageOrientation: 'landscape',
-            disableFilterColumns: false,
-            disableFileName: false,
-            disableFileNamePrefix: false,
-            disablePreview: false,
-            disableTableColumns: false,
-            includeHiddenColumns: false,
-            defaultFileName: null,
-            timeFormat: null,
-            csvDelimiter: ',',
-            formatStates: [],
-            extraViewData: [],
-            fileNameFieldLabel: null,
-            formatFieldLabel: null,
-            pageOrientationFieldLabel: null,
-            filterColumnsFieldLabel: null,
-            modifyPdfHtml: null,
-            modifyDompdfWriter: null,
-            modifyXlsxWriter: $modifyXlsxWriter,
-            modifyCsvWriter: $modifyCsvWriter,
-        );
+        return TableExportOptionsFactory::make([
+            'modifyCsvWriter' => $modifyCsvWriter,
+            'modifyXlsxWriter' => $modifyXlsxWriter,
+        ]);
     }
 }

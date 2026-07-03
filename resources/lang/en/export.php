@@ -1,7 +1,8 @@
 <?php
 
 return [
-    'action_label' => 'Export data',
+    'action_label' => 'Export',
+    'group_label' => 'Export table',
     'modal_heading' => 'Export & print',
     'submit' => 'Run',
     'preview' => 'Preview',
@@ -13,9 +14,18 @@ return [
     'columns' => 'Columns',
     'formats' => [
         'csv' => 'CSV',
-        'xlsx' => 'XLSX',
-        'pdf' => 'Print PDF',
+        'xlsx' => 'Excel (XLSX)',
+        'pdf' => 'PDF',
+        'json' => 'JSON',
+        'xml' => 'XML',
+        'clipboard' => 'Copy to clipboard',
     ],
+    'clipboard_formats' => [
+        'tsv' => 'Tab-separated values',
+        'csv' => 'Comma-separated values',
+        'json' => 'JSON array',
+    ],
+    'copied_to_clipboard' => 'Copied to clipboard',
     'preview_summary' => 'Showing :from–:to of :total records',
     'preview_page' => 'Page :page of :lastPage',
     'preview_previous' => 'Previous',

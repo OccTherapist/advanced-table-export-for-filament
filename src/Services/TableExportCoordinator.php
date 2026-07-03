@@ -12,9 +12,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use OccTherapist\AdvancedTableExportForFilament\Data\TableExportOptions;
 use OccTherapist\AdvancedTableExportForFilament\Enums\ExportFormat;
+use OccTherapist\AdvancedTableExportForFilament\Exports\ClipboardExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\CsvExporter;
+use OccTherapist\AdvancedTableExportForFilament\Exports\JsonExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\PdfTableExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\XlsxExporter;
+use OccTherapist\AdvancedTableExportForFilament\Exports\XmlExporter;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportColumnCollection;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportRowBuilder;
 use RuntimeException;
@@ -26,6 +29,9 @@ class TableExportCoordinator
         protected CsvExporter $csvExporter,
         protected XlsxExporter $xlsxExporter,
         protected PdfTableExporter $pdfTableExporter,
+        protected JsonExporter $jsonExporter,
+        protected XmlExporter $xmlExporter,
+        protected ClipboardExporter $clipboardExporter,
     ) {}
 
     /**
@@ -66,7 +72,7 @@ class TableExportCoordinator
         }
 
         $format = $options->resolveFormat($data['format'] ?? null);
-        $limit = $format === ExportFormat::Pdf ? $options->maxPdfRows : $options->maxExportRows;
+        $limit = $options->resolveRowLimit($format);
 
         if ($records->count() > $limit) {
             Notification::make()
@@ -122,6 +128,24 @@ class TableExportCoordinator
                     title: $table->getHeading(),
                     options: $options,
                 ),
+                ExportFormat::Json => $this->jsonExporter->download(
+                    fileName: $fileName,
+                    headers: $headerLabels,
+                    rows: $rows,
+                    options: $options,
+                ),
+                ExportFormat::Xml => $this->xmlExporter->download(
+                    fileName: $fileName,
+                    headers: $headerLabels,
+                    rows: $rows,
+                    options: $options,
+                ),
+                ExportFormat::Clipboard => $this->handleClipboardExport(
+                    action: $action,
+                    headers: $headerLabels,
+                    rows: $rows,
+                    options: $options,
+                ),
             };
         } catch (RuntimeException $exception) {
             Notification::make()
@@ -134,6 +158,26 @@ class TableExportCoordinator
 
             return null;
         }
+    }
+
+    /**
+     * @param  array<string, string>  $headers
+     * @param  array<int, array<string, string>>  $rows
+     */
+    protected function handleClipboardExport(
+        Action|BulkAction $action,
+        array $headers,
+        array $rows,
+        TableExportOptions $options,
+    ): ?StreamedResponse {
+        $this->clipboardExporter->copy(
+            action: $action,
+            headers: $headers,
+            rows: $rows,
+            options: $options,
+        );
+
+        return null;
     }
 
     /**

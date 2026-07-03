@@ -4,10 +4,9 @@ namespace OccTherapist\AdvancedTableExportForFilament\Tests\Unit;
 
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Model;
-use OccTherapist\AdvancedTableExportForFilament\Data\TableExportOptions;
-use OccTherapist\AdvancedTableExportForFilament\Enums\ExportFormat;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportColumnCollection;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportRowBuilder;
+use OccTherapist\AdvancedTableExportForFilament\Tests\Support\TableExportOptionsFactory;
 use OccTherapist\AdvancedTableExportForFilament\Tests\Support\TableFactory;
 use OccTherapist\AdvancedTableExportForFilament\Tests\TestCase;
 
@@ -31,40 +30,11 @@ class ExportRowBuilderTest extends TestCase
             includeHiddenColumns: true,
         );
 
-        $options = new TableExportOptions(
-            usesSelectedRecords: false,
-            additionalColumns: [],
-            modifyExportQueryUsing: null,
-            maxPdfRows: 200,
-            maxExportRows: 2000,
-            previewPerPage: 25,
-            disablePdf: false,
-            disableXlsx: false,
-            disableCsv: false,
-            defaultFormat: ExportFormat::Xlsx,
-            defaultPageOrientation: 'landscape',
-            disableFilterColumns: false,
-            disableFileName: false,
-            disableFileNamePrefix: false,
-            disablePreview: false,
-            disableTableColumns: false,
-            includeHiddenColumns: false,
-            defaultFileName: null,
-            timeFormat: null,
-            csvDelimiter: null,
-            formatStates: [
+        $options = TableExportOptionsFactory::make([
+            'formatStates' => [
                 'name' => fn (Model $record): string => strtoupper((string) $record->name),
             ],
-            extraViewData: [],
-            fileNameFieldLabel: null,
-            formatFieldLabel: null,
-            pageOrientationFieldLabel: null,
-            filterColumnsFieldLabel: null,
-            modifyPdfHtml: null,
-            modifyDompdfWriter: null,
-            modifyXlsxWriter: null,
-            modifyCsvWriter: null,
-        );
+        ]);
 
         $rows = ExportRowBuilder::build(
             table: $table,

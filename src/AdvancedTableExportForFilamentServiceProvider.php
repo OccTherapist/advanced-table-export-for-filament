@@ -2,11 +2,16 @@
 
 namespace OccTherapist\AdvancedTableExportForFilament;
 
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\ServiceProvider;
 use OccTherapist\AdvancedTableExportForFilament\Contracts\PdfRenderer;
+use OccTherapist\AdvancedTableExportForFilament\Exports\ClipboardExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\CsvExporter;
+use OccTherapist\AdvancedTableExportForFilament\Exports\JsonExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\PdfTableExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\XlsxExporter;
+use OccTherapist\AdvancedTableExportForFilament\Exports\XmlExporter;
 use OccTherapist\AdvancedTableExportForFilament\Pdf\NullPdfRenderer;
 use OccTherapist\AdvancedTableExportForFilament\Services\TableExportCoordinator;
 
@@ -22,6 +27,9 @@ class AdvancedTableExportForFilamentServiceProvider extends ServiceProvider
         $this->app->singleton(CsvExporter::class);
         $this->app->singleton(XlsxExporter::class);
         $this->app->singleton(PdfTableExporter::class);
+        $this->app->singleton(JsonExporter::class);
+        $this->app->singleton(XmlExporter::class);
+        $this->app->singleton(ClipboardExporter::class);
         $this->app->singleton(TableExportCoordinator::class);
 
         $this->app->singleton(PdfRenderer::class, function (): PdfRenderer {
@@ -45,6 +53,13 @@ class AdvancedTableExportForFilamentServiceProvider extends ServiceProvider
 
         if (is_dir($publishedViewsPath)) {
             $this->loadViewsFrom($publishedViewsPath, 'advanced-table-export-for-filament');
+        }
+
+        if (class_exists(FilamentView::class) && class_exists(PanelsRenderHook::class)) {
+            FilamentView::registerRenderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => view('advanced-table-export-for-filament::clipboard-listener')->render(),
+            );
         }
 
         if ($this->app->runningInConsole()) {

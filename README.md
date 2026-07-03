@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/OccTherapist/advanced-table-export-for-filament?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/occtherapist/advanced-table-export-for-filament.svg?style=flat-square)](https://packagist.org/packages/occtherapist/advanced-table-export-for-filament)
 
-**Export and print Filament admin tables in seconds** — CSV, XLSX, and PDF with column selection, preview, and flexible PDF drivers.
+**Export and print Filament admin tables in seconds** — CSV, XLSX, PDF, JSON, XML, and clipboard with column selection, preview, and flexible PDF drivers.
 
 Built for **Filament v4 and v5** on **Laravel 11/12**. A modern, actively maintained successor to the export workflow many teams relied on with [`alperenersoy/filament-export`](https://github.com/alperenersoy/filament-export).
 
@@ -17,7 +17,7 @@ Built for **Filament v4 and v5** on **Laravel 11/12**. A modern, actively mainta
 |------|--------------|
 | Export **filtered, sorted, searched** table data (not just selected rows) | Header action exports the current table query |
 | Export **only selected rows** | Bulk action for row selection |
-| **CSV, XLSX, PDF** from one modal | Single action with format picker |
+| **CSV, XLSX, PDF, JSON, XML, clipboard** from one modal or quick menu | Modal action or quick ActionGroup |
 | **Choose columns** before export | Built-in column filter in the export modal |
 | **PDF** with portrait or landscape | Configurable orientation per export |
 | **Multiple PDF backends** | Sidecar, Browsershot, Dompdf, or null driver |
@@ -32,7 +32,8 @@ Filament's [native export action](https://filamentphp.com/docs/actions/export) i
 
 - **Header action** — export the full filtered/sorted table state
 - **Bulk action** — export only selected records
-- **Formats** — CSV, XLSX, PDF (print-ready)
+- **Quick actions** — ActionGroup with one click per format (no modal)
+- **Formats** — CSV, XLSX, PDF, JSON, XML, and copy to clipboard
 - **Column picker** — let users choose which columns to include
 - **Custom file names** — optional filename input with timestamp prefix
 - **PDF orientation** — landscape or portrait
@@ -92,14 +93,16 @@ Add the actions to any table:
 ```php
 use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportBulkAction;
 use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportHeaderAction;
+use OccTherapist\AdvancedTableExportForFilament\Actions\TableExportQuickHeaderAction;
 use Filament\Tables\Columns\TextColumn;
 
 public function table(Table $table): Table
 {
     return $table
         ->headerActions([
-            TableExportHeaderAction::make()
-                ->modifyExportQueryUsing(fn ($query) => $query->where('is_active', true)),
+            TableExportQuickHeaderAction::make(),
+            // or modal-based export:
+            // TableExportHeaderAction::make()
         ])
         ->toolbarActions([
             TableExportBulkAction::make()
@@ -210,7 +213,7 @@ Many `disable*` options from the original package map directly to config keys (s
 
 ## Action customization
 
-Both export actions support a fluent API similar to `filament-export`:
+Both modal and quick export actions share a fluent API similar to `filament-export`:
 
 ```php
 use Filament\Tables\Columns\TextColumn;
@@ -245,7 +248,13 @@ TableExportHeaderAction::make()
 |--------|-------------|
 | `fileName()` | Default file name |
 | `timeFormat()` | Timestamp format when the file name is generated automatically |
-| `disablePdf()` / `disableXlsx()` / `disableCsv()` | Hide export formats |
+| `formats()` | Whitelist enabled export formats |
+| `disablePdf()` / `disableXlsx()` / `disableCsv()` / `disableJson()` / `disableXml()` / `disableClipboard()` | Hide export formats |
+| `clipboardFormat()` | Clipboard payload format (`Tsv`, `Csv`, `Json`) |
+| `jsonStructure()` / `prettyJson()` / `compactJson()` | JSON export structure and formatting |
+| `xmlRoot()` / `xmlRowTag()` | XML root and row element names |
+| `formatIcon()` / `formatLabel()` / `groupLabel()` | Quick export presentation |
+| `modifyJsonExport()` / `modifyXmlExport()` | Customize JSON/XML output before download |
 | `defaultFormat()` | Default selected format |
 | `defaultPageOrientation()` | Default PDF orientation |
 | `directDownload()` | Skip the modal and export immediately with defaults |
@@ -296,22 +305,8 @@ Edit `resources/views/vendor/advanced-table-export-for-filament/pdf/table.blade.
 
 | Version | Focus |
 |---------|-------|
-| **v0.4.0** *(current)* | Publishable views, writer hooks (`modifyPdfHtml`, `modifyDompdfWriter`, `modifyXlsxWriter`, `modifyCsvWriter`) |
-| **v0.x** | Further 0.x releases as needed |
-| **v1.0** | API freeze + hardening when production checklist is green (see below) |
+| **v1.0.0** *(current)* | JSON, XML, clipboard, quick export ActionGroups, `formats()` API |
 | **v1.1+** | End-user additional-columns UI |
-
-### Path to v1.0
-
-v1.0 ships when all criteria are met — not as the immediate next release:
-
-1. Feature parity for your production use case (documented gaps OK)
-2. At least one production project stable for 4+ weeks without vendor patches
-3. Filament plugin listing approved
-4. Test suite covers export pipeline and hooks
-5. Upgrade guide from `filament-export` in README
-
-Star or watch the repository to follow progress: [github.com/OccTherapist/advanced-table-export-for-filament](https://github.com/OccTherapist/advanced-table-export-for-filament)
 
 ---
 
