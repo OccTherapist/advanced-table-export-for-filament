@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/github/license/OccTherapist/advanced-table-export-for-filament?style=flat-square)](LICENSE)
 [![PHP Version](https://img.shields.io/packagist/php-v/occtherapist/advanced-table-export-for-filament.svg?style=flat-square)](https://packagist.org/packages/occtherapist/advanced-table-export-for-filament)
 
-<picture>
+<picture class="filament-hidden">
   <source media="(prefers-color-scheme: dark)" srcset="art/banner-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="art/banner-light.png">
   <img src="art/banner-light.png" alt="Advanced Table Export for Filament — export tables to XLSX, CSV, PDF, JSON, XML, or clipboard" width="100%">
