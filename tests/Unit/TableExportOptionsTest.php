@@ -14,6 +14,7 @@ class TableExportOptionsTest extends TestCase
         $options = TableExportOptionsFactory::make([
             'disablePdf' => true,
             'disableCsv' => true,
+            'disableDocx' => true,
             'disableJson' => true,
             'disableXml' => true,
             'disableClipboard' => true,

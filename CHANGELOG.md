@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-08-25
+
+### Added
+- **Word (.docx)** export format via optional [`phpoffice/phpword`](https://github.com/PHPOffice/PHPWord)
+- `disableDocx()` and `modifyDocxDocument()` writer hook
+- Page orientation control for DOCX (shared with PDF in the export modal)
+
+### Changed
+- All seven export formats are enabled by default (CSV, XLSX, PDF, DOCX, JSON, XML, clipboard)
+
 ## [1.0.1] - 2026-07-03
 
 ### Added

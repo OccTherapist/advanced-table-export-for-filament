@@ -26,6 +26,7 @@ class TableExportOptionsFactory
             disablePdf: $overrides['disablePdf'] ?? false,
             disableXlsx: $overrides['disableXlsx'] ?? false,
             disableCsv: $overrides['disableCsv'] ?? false,
+            disableDocx: $overrides['disableDocx'] ?? false,
             disableJson: $overrides['disableJson'] ?? false,
             disableXml: $overrides['disableXml'] ?? false,
             disableClipboard: $overrides['disableClipboard'] ?? false,
@@ -61,6 +62,7 @@ class TableExportOptionsFactory
             modifyCsvWriter: $overrides['modifyCsvWriter'] ?? null,
             modifyJsonExport: $overrides['modifyJsonExport'] ?? null,
             modifyXmlExport: $overrides['modifyXmlExport'] ?? null,
+            modifyDocxDocument: $overrides['modifyDocxDocument'] ?? null,
         );
     }
 }

@@ -29,6 +29,8 @@ trait InteractsWithTableExportOptions
 
     protected ?bool $disableCsv = null;
 
+    protected ?bool $disableDocx = null;
+
     protected ?bool $disableJson = null;
 
     protected ?bool $disableXml = null;
@@ -102,6 +104,8 @@ trait InteractsWithTableExportOptions
 
     protected ?Closure $modifyXmlExport = null;
 
+    protected ?Closure $modifyDocxDocument = null;
+
     /**
      * @param  array<int, Column>  $columns
      */
@@ -164,6 +168,13 @@ trait InteractsWithTableExportOptions
     public function disableCsv(bool $condition = true): static
     {
         $this->disableCsv = $condition;
+
+        return $this;
+    }
+
+    public function disableDocx(bool $condition = true): static
+    {
+        $this->disableDocx = $condition;
 
         return $this;
     }
@@ -410,6 +421,13 @@ trait InteractsWithTableExportOptions
         return $this;
     }
 
+    public function modifyDocxDocument(?Closure $callback): static
+    {
+        $this->modifyDocxDocument = $callback;
+
+        return $this;
+    }
+
     public function shouldDirectDownload(): bool
     {
         return $this->directDownload;
@@ -435,6 +453,7 @@ trait InteractsWithTableExportOptions
             disablePdf: $this->disablePdf ?? false,
             disableXlsx: $this->disableXlsx ?? false,
             disableCsv: $this->disableCsv ?? false,
+            disableDocx: $this->disableDocx ?? false,
             disableJson: $this->disableJson ?? false,
             disableXml: $this->disableXml ?? false,
             disableClipboard: $this->disableClipboard ?? false,
@@ -487,6 +506,7 @@ trait InteractsWithTableExportOptions
             modifyCsvWriter: $this->modifyCsvWriter,
             modifyJsonExport: $this->modifyJsonExport,
             modifyXmlExport: $this->modifyXmlExport,
+            modifyDocxDocument: $this->modifyDocxDocument,
         );
     }
 

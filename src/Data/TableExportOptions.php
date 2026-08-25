@@ -31,6 +31,7 @@ readonly class TableExportOptions
         public bool $disablePdf,
         public bool $disableXlsx,
         public bool $disableCsv,
+        public bool $disableDocx,
         public bool $disableJson,
         public bool $disableXml,
         public bool $disableClipboard,
@@ -66,6 +67,7 @@ readonly class TableExportOptions
         public ?Closure $modifyCsvWriter = null,
         public ?Closure $modifyJsonExport = null,
         public ?Closure $modifyXmlExport = null,
+        public ?Closure $modifyDocxDocument = null,
     ) {}
 
     /**
@@ -101,6 +103,7 @@ readonly class TableExportOptions
             ExportFormat::Csv => $this->disableCsv,
             ExportFormat::Xlsx => $this->disableXlsx,
             ExportFormat::Pdf => $this->disablePdf,
+            ExportFormat::Docx => $this->disableDocx,
             ExportFormat::Json => $this->disableJson,
             ExportFormat::Xml => $this->disableXml,
             ExportFormat::Clipboard => $this->disableClipboard,

@@ -16,6 +16,7 @@ return [
         'csv' => 'CSV',
         'xlsx' => 'Excel (XLSX)',
         'pdf' => 'PDF',
+        'docx' => 'Word (DOCX)',
         'json' => 'JSON',
         'xml' => 'XML',
         'clipboard' => 'In Zwischenablage kopieren',

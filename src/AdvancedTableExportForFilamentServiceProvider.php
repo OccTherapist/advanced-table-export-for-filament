@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use OccTherapist\AdvancedTableExportForFilament\Contracts\PdfRenderer;
 use OccTherapist\AdvancedTableExportForFilament\Exports\ClipboardExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\CsvExporter;
+use OccTherapist\AdvancedTableExportForFilament\Exports\DocxExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\JsonExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\PdfTableExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\XlsxExporter;
@@ -27,6 +28,7 @@ class AdvancedTableExportForFilamentServiceProvider extends ServiceProvider
         $this->app->singleton(CsvExporter::class);
         $this->app->singleton(XlsxExporter::class);
         $this->app->singleton(PdfTableExporter::class);
+        $this->app->singleton(DocxExporter::class);
         $this->app->singleton(JsonExporter::class);
         $this->app->singleton(XmlExporter::class);
         $this->app->singleton(ClipboardExporter::class);

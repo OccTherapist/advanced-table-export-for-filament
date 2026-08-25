@@ -8,10 +8,10 @@
 <picture class="filament-hidden">
   <source media="(prefers-color-scheme: dark)" srcset="art/banner-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="art/banner-light.png">
-  <img src="art/banner-light.png" alt="Advanced Table Export for Filament — export tables to XLSX, CSV, PDF, JSON, XML, or clipboard" width="100%">
+  <img src="art/banner-light.png" alt="Advanced Table Export for Filament — export tables to XLSX, CSV, PDF, DOCX, JSON, XML, or clipboard" width="100%">
 </picture>
 
-**Export and print Filament admin tables in seconds** — CSV, XLSX, PDF, JSON, XML, and clipboard with column selection, preview, and flexible PDF drivers.
+**Export and print Filament admin tables in seconds** — CSV, XLSX, PDF, DOCX, JSON, XML, and clipboard with column selection, preview, and flexible PDF drivers.
 
 Built for **Filament v4 and v5** on **Laravel 11, 12, and 13**. A modern, actively maintained successor to the export workflow many teams relied on with [`alperenersoy/filament-export`](https://github.com/alperenersoy/filament-export).
 
@@ -23,9 +23,9 @@ Built for **Filament v4 and v5** on **Laravel 11, 12, and 13**. A modern, active
 |------|--------------|
 | Export **filtered, sorted, searched** table data (not just selected rows) | Header action exports the current table query |
 | Export **only selected rows** | Bulk action for row selection |
-| **CSV, XLSX, PDF, JSON, XML, clipboard** from one modal or quick menu | Modal action or quick ActionGroup |
+| **CSV, XLSX, PDF, DOCX, JSON, XML, clipboard** from one modal or quick menu | Modal action or quick ActionGroup |
 | **Choose columns** before export | Built-in column filter in the export modal |
-| **PDF** with portrait or landscape | Configurable orientation per export |
+| **PDF / Word** with portrait or landscape | Configurable orientation per export |
 | **Multiple PDF backends** | Sidecar, Browsershot, Dompdf, or null driver |
 | **Filament v4/v5** without waiting on upstream | First-class support from day one |
 | **German & English** UI | Translations included |
@@ -39,11 +39,12 @@ Filament's [native export action](https://filamentphp.com/docs/actions/export) i
 - **Header action** — export the full filtered/sorted table state
 - **Bulk action** — export only selected records
 - **Quick actions** — ActionGroup with one click per format (no modal)
-- **Formats** — CSV, XLSX, PDF, JSON, XML, and copy to clipboard
+- **Formats** — CSV, XLSX, PDF, DOCX, JSON, XML, and copy to clipboard
 - **Column picker** — let users choose which columns to include
 - **Custom file names** — optional filename input with timestamp prefix
-- **PDF orientation** — landscape or portrait
+- **Page orientation** — landscape or portrait for PDF and Word
 - **Pluggable PDF renderers** — Sidecar Browsershot, local Browsershot, Dompdf
+- **Word (.docx)** — optional PhpWord-powered table documents
 - **Row limits** — configurable caps for PDF and spreadsheet exports
 - **Panel plugin** — central limits and defaults per Filament panel
 - **i18n** — English and German translations out of the box
@@ -57,7 +58,7 @@ Filament's [native export action](https://filamentphp.com/docs/actions/export) i
 - [Filament](https://filamentphp.com/) 4 or 5
 - Laravel 11, 12, or 13
 
-**Optional** (pick one PDF stack):
+**Optional** PDF stack (pick one):
 
 | Driver | Packages |
 |--------|----------|
@@ -65,6 +66,12 @@ Filament's [native export action](https://filamentphp.com/docs/actions/export) i
 | `browsershot` | `spatie/laravel-pdf`, `spatie/browsershot` |
 | `dompdf` | `dompdf/dompdf` |
 | `null` | No PDF dependencies (default) |
+
+**Optional** Word exports:
+
+```bash
+composer require phpoffice/phpword
+```
 
 Spreadsheet exports use [OpenSpout](https://github.com/openspout/openspout) (included).
 
@@ -255,14 +262,14 @@ TableExportHeaderAction::make()
 | `fileName()` | Default file name |
 | `timeFormat()` | Timestamp format when the file name is generated automatically |
 | `formats()` | Whitelist enabled export formats |
-| `disablePdf()` / `disableXlsx()` / `disableCsv()` / `disableJson()` / `disableXml()` / `disableClipboard()` | Hide export formats |
+| `disablePdf()` / `disableXlsx()` / `disableCsv()` / `disableDocx()` / `disableJson()` / `disableXml()` / `disableClipboard()` | Hide export formats |
 | `clipboardFormat()` | Clipboard payload format (`Tsv`, `Csv`, `Json`) |
 | `jsonStructure()` / `prettyJson()` / `compactJson()` | JSON export structure and formatting |
 | `xmlRoot()` / `xmlRowTag()` | XML root and row element names |
 | `formatIcon()` / `formatLabel()` / `groupLabel()` | Quick export presentation |
-| `modifyJsonExport()` / `modifyXmlExport()` | Customize JSON/XML output before download |
+| `modifyJsonExport()` / `modifyXmlExport()` / `modifyDocxDocument()` | Customize JSON/XML/DOCX output before download |
 | `defaultFormat()` | Default selected format |
-| `defaultPageOrientation()` | Default PDF orientation |
+| `defaultPageOrientation()` | Default PDF/DOCX orientation |
 | `directDownload()` | Skip the modal and export immediately with defaults |
 | `disableFilterColumns()` | Hide the column picker |
 | `disableFileName()` | Hide the file name input |
@@ -287,15 +294,17 @@ Action-level settings override global config values.
 ```php
 use OpenSpout\Writer\CSV\Options;
 use OpenSpout\Writer\XLSX\Writer as XlsxWriter;
+use PhpOffice\PhpWord\PhpWord;
 
 TableExportHeaderAction::make()
     ->modifyPdfHtml(fn (string $html, array $context): string => $html.'<footer>Okidoki</footer>')
     ->modifyDompdfWriter(fn (\Dompdf\Dompdf $dompdf, array $context) => $dompdf->setPaper('A4', 'landscape'))
     ->modifyXlsxWriter(fn (XlsxWriter $writer, array $context) => $writer->getCurrentSheet()->setName('Export'))
-    ->modifyCsvWriter(fn (Options $options, array $context) => $options->FIELD_DELIMITER = '|');
+    ->modifyCsvWriter(fn (Options $options, array $context) => $options->FIELD_DELIMITER = '|')
+    ->modifyDocxDocument(fn (PhpWord $phpWord, array $context) => $phpWord->addSection()->addText('Confidential'));
 ```
 
-Each hook receives a `$context` array: `fileName`, `headers`, `rows`, `rowCount`, `format`, and `orientation` (PDF only).
+Each hook receives a `$context` array: `fileName`, `headers`, `rows`, `rowCount`, `format`, and `orientation` (PDF/DOCX).
 
 ### Custom Blade views
 
@@ -311,8 +320,9 @@ Edit `resources/views/vendor/advanced-table-export-for-filament/pdf/table.blade.
 
 | Version | Focus |
 |---------|-------|
-| **v1.0.0** *(current)* | JSON, XML, clipboard, quick export ActionGroups, `formats()` API |
-| **v1.1+** | End-user additional-columns UI |
+| **v1.0.0** | JSON, XML, clipboard, quick export ActionGroups, `formats()` API |
+| **v1.1.0** *(current)* | Word (.docx) export via PhpWord |
+| **v1.2+** | End-user additional-columns UI |
 
 ---
 

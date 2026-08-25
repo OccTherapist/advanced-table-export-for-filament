@@ -9,6 +9,7 @@ enum ExportFormat: string implements HasLabel
     case Csv = 'csv';
     case Xlsx = 'xlsx';
     case Pdf = 'pdf';
+    case Docx = 'docx';
     case Json = 'json';
     case Xml = 'xml';
     case Clipboard = 'clipboard';
@@ -19,6 +20,7 @@ enum ExportFormat: string implements HasLabel
             self::Csv => __('advanced-table-export-for-filament::export.formats.csv'),
             self::Xlsx => __('advanced-table-export-for-filament::export.formats.xlsx'),
             self::Pdf => __('advanced-table-export-for-filament::export.formats.pdf'),
+            self::Docx => __('advanced-table-export-for-filament::export.formats.docx'),
             self::Json => __('advanced-table-export-for-filament::export.formats.json'),
             self::Xml => __('advanced-table-export-for-filament::export.formats.xml'),
             self::Clipboard => __('advanced-table-export-for-filament::export.formats.clipboard'),
@@ -31,6 +33,7 @@ enum ExportFormat: string implements HasLabel
             self::Csv => 'heroicon-o-document-text',
             self::Xlsx => 'heroicon-o-table-cells',
             self::Pdf => 'heroicon-o-document',
+            self::Docx => 'heroicon-o-document-duplicate',
             self::Json => 'heroicon-o-code-bracket',
             self::Xml => 'heroicon-o-code-bracket-square',
             self::Clipboard => 'heroicon-o-clipboard-document',
