@@ -124,7 +124,10 @@ trait ConfiguresTableExportAction
                     'portrait' => __('advanced-table-export-for-filament::export.portrait'),
                 ])
                 ->default($options->defaultPageOrientation)
-                ->visible(fn (Get $get): bool => $get('format') === ExportFormat::Pdf->value),
+                ->visible(fn (Get $get): bool => in_array($get('format'), [
+                    ExportFormat::Pdf->value,
+                    ExportFormat::Docx->value,
+                ], true)),
         ];
 
         if (! $options->disableFileName) {

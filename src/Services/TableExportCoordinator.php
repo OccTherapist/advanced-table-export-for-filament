@@ -14,6 +14,7 @@ use OccTherapist\AdvancedTableExportForFilament\Data\TableExportOptions;
 use OccTherapist\AdvancedTableExportForFilament\Enums\ExportFormat;
 use OccTherapist\AdvancedTableExportForFilament\Exports\ClipboardExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\CsvExporter;
+use OccTherapist\AdvancedTableExportForFilament\Exports\DocxExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\JsonExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\PdfTableExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\XlsxExporter;
@@ -29,6 +30,7 @@ class TableExportCoordinator
         protected CsvExporter $csvExporter,
         protected XlsxExporter $xlsxExporter,
         protected PdfTableExporter $pdfTableExporter,
+        protected DocxExporter $docxExporter,
         protected JsonExporter $jsonExporter,
         protected XmlExporter $xmlExporter,
         protected ClipboardExporter $clipboardExporter,
@@ -121,6 +123,14 @@ class TableExportCoordinator
                     options: $options,
                 ),
                 ExportFormat::Pdf => $this->pdfTableExporter->download(
+                    fileName: $fileName,
+                    headers: $headerLabels,
+                    rows: $rows,
+                    orientation: $data['page_orientation'] ?? $options->defaultPageOrientation,
+                    title: $table->getHeading(),
+                    options: $options,
+                ),
+                ExportFormat::Docx => $this->docxExporter->download(
                     fileName: $fileName,
                     headers: $headerLabels,
                     rows: $rows,

@@ -1,6 +1,6 @@
 {
     "name": "occtherapist/advanced-table-export-for-filament",
-    "description": "Export and print Filament admin tables to CSV, XLSX, and PDF — Filament v4/v5 compatible successor to filament-export.",
+    "description": "Export and print Filament admin tables to CSV, XLSX, PDF, DOCX, JSON, and XML — Filament v4/v5 compatible successor to filament-export.",
     "keywords": [
         "filament",
         "filament-plugin",
@@ -11,7 +11,10 @@
         "pdf",
         "csv",
         "xlsx",
+        "docx",
+        "word",
         "openspout",
+        "phpword",
         "browsershot",
         "dompdf",
         "filament-export"
@@ -41,9 +44,11 @@
         "laravel/pint": "^1.22",
         "mockery/mockery": "^1.6",
         "orchestra/testbench": "^10.0|^11.0",
+        "phpoffice/phpword": "^1.3",
         "phpunit/phpunit": "^11.0"
     },
     "suggest": {
+        "phpoffice/phpword": "Required for Microsoft Word (.docx) exports.",
         "spatie/laravel-pdf": "Required for PDF rendering drivers.",
         "spatie/browsershot": "Required for local Browsershot PDF rendering.",
         "wnx/sidecar-browsershot": "Required for Sidecar Browsershot PDF rendering.",
