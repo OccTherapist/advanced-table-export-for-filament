@@ -19,6 +19,7 @@ use OccTherapist\AdvancedTableExportForFilament\Exports\JsonExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\PdfTableExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\XlsxExporter;
 use OccTherapist\AdvancedTableExportForFilament\Exports\XmlExporter;
+use OccTherapist\AdvancedTableExportForFilament\Support\AdditionalExportColumns;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportColumnCollection;
 use OccTherapist\AdvancedTableExportForFilament\Support\ExportRowBuilder;
 use RuntimeException;
@@ -264,13 +265,27 @@ class TableExportCoordinator
             $enabledColumns = $options->resolveDefaultEnabledColumnNames($table);
         }
 
-        return ExportColumnCollection::resolve(
+        $columns = ExportColumnCollection::resolve(
             table: $table,
             additionalColumns: $options->additionalColumns,
             enabledColumnNames: $enabledColumns,
             includeHiddenColumns: $options->includeHiddenColumns,
             disableTableColumns: $options->disableTableColumns,
         );
+
+        if ($options->disableAdditionalColumns) {
+            return $columns;
+        }
+
+        $userAdditionalColumns = AdditionalExportColumns::fromFormData(
+            is_array($data['additional_columns'] ?? null) ? $data['additional_columns'] : [],
+        );
+
+        if ($userAdditionalColumns->isEmpty()) {
+            return $columns;
+        }
+
+        return $columns->merge($userAdditionalColumns)->values();
     }
 
     protected function resolveFileName(?string $fileName, Table $table, TableExportOptions $options): string

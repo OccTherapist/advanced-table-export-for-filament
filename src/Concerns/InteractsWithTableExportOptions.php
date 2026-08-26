@@ -48,6 +48,8 @@ trait InteractsWithTableExportOptions
 
     protected ?bool $disableFilterColumns = null;
 
+    protected ?bool $disableAdditionalColumns = null;
+
     protected ?bool $disableFileName = null;
 
     protected ?bool $disableFileNamePrefix = null;
@@ -91,6 +93,14 @@ trait InteractsWithTableExportOptions
     protected ?string $pageOrientationFieldLabel = null;
 
     protected ?string $filterColumnsFieldLabel = null;
+
+    protected ?string $additionalColumnsFieldLabel = null;
+
+    protected ?string $additionalColumnsTitleFieldLabel = null;
+
+    protected ?string $additionalColumnsDefaultValueFieldLabel = null;
+
+    protected ?string $additionalColumnsAddButtonLabel = null;
 
     protected ?Closure $modifyPdfHtml = null;
 
@@ -224,6 +234,13 @@ trait InteractsWithTableExportOptions
     public function disableFilterColumns(bool $condition = true): static
     {
         $this->disableFilterColumns = $condition;
+
+        return $this;
+    }
+
+    public function disableAdditionalColumns(bool $condition = true): static
+    {
+        $this->disableAdditionalColumns = $condition;
 
         return $this;
     }
@@ -379,6 +396,34 @@ trait InteractsWithTableExportOptions
         return $this;
     }
 
+    public function additionalColumnsFieldLabel(?string $label): static
+    {
+        $this->additionalColumnsFieldLabel = $label;
+
+        return $this;
+    }
+
+    public function additionalColumnsTitleFieldLabel(?string $label): static
+    {
+        $this->additionalColumnsTitleFieldLabel = $label;
+
+        return $this;
+    }
+
+    public function additionalColumnsDefaultValueFieldLabel(?string $label): static
+    {
+        $this->additionalColumnsDefaultValueFieldLabel = $label;
+
+        return $this;
+    }
+
+    public function additionalColumnsAddButtonLabel(?string $label): static
+    {
+        $this->additionalColumnsAddButtonLabel = $label;
+
+        return $this;
+    }
+
     public function modifyPdfHtml(?Closure $callback): static
     {
         $this->modifyPdfHtml = $callback;
@@ -463,6 +508,8 @@ trait InteractsWithTableExportOptions
                 ?? config('advanced-table-export-for-filament.default_page_orientation', 'landscape'),
             disableFilterColumns: $this->disableFilterColumns
                 ?? config('advanced-table-export-for-filament.disable_filter_columns', false),
+            disableAdditionalColumns: $this->disableAdditionalColumns
+                ?? config('advanced-table-export-for-filament.disable_additional_columns', false),
             disableFileName: $this->disableFileName
                 ?? config('advanced-table-export-for-filament.disable_file_name', false),
             disablePreview: $this->disablePreview
@@ -497,6 +544,10 @@ trait InteractsWithTableExportOptions
             formatFieldLabel: $this->formatFieldLabel,
             pageOrientationFieldLabel: $this->pageOrientationFieldLabel,
             filterColumnsFieldLabel: $this->filterColumnsFieldLabel,
+            additionalColumnsFieldLabel: $this->additionalColumnsFieldLabel,
+            additionalColumnsTitleFieldLabel: $this->additionalColumnsTitleFieldLabel,
+            additionalColumnsDefaultValueFieldLabel: $this->additionalColumnsDefaultValueFieldLabel,
+            additionalColumnsAddButtonLabel: $this->additionalColumnsAddButtonLabel,
             groupLabel: $this->groupLabel,
             formatIcons: $this->formatIcons,
             formatLabels: $this->formatLabels,

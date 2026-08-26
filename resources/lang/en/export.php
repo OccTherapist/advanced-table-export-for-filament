@@ -12,6 +12,12 @@ return [
     'portrait' => 'Portrait',
     'file_name' => 'File name',
     'columns' => 'Columns',
+    'additional_columns' => [
+        'label' => 'Additional columns',
+        'title' => 'Title',
+        'default_value' => 'Default value',
+        'add' => 'Add column',
+    ],
     'formats' => [
         'csv' => 'CSV',
         'xlsx' => 'Excel (XLSX)',

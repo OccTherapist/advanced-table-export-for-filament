@@ -126,7 +126,7 @@ public function table(Table $table): Table
 }
 ```
 
-`TableExportHeaderAction` exports the filtered, sorted, and searched table query. `TableExportBulkAction` exports only the selected rows. Use `withColumns()` to include extra model columns that are not visible in the table.
+`TableExportHeaderAction` exports the filtered, sorted, and searched table query. `TableExportBulkAction` exports only the selected rows. Use `withColumns()` to include extra model columns that are not visible in the table. End users can also add static columns (title + default value) in the export modal unless disabled.
 
 Publish the config (optional):
 
@@ -167,7 +167,7 @@ All options live in `config/advanced-table-export-for-filament.php`:
 | `disable_filter_columns` | `false` | Hide column picker |
 | `disable_file_name` | `false` | Hide filename input |
 | `disable_file_name_prefix` | `false` | Disable timestamp prefix on filenames |
-| `disable_additional_columns` | `false` | Disable extra column inputs |
+| `disable_additional_columns` | `false` | Hide the additional-columns KeyValue input in the modal |
 | `preview_per_page` | `25` | Preview pagination size (v0.2.0) |
 | `action_icon` | `heroicon-o-arrow-down-on-square` | Action button icon |
 
@@ -254,7 +254,8 @@ TableExportHeaderAction::make()
     ])
     ->fileNameFieldLabel('Report name')
     ->formatFieldLabel('Export as')
-    ->filterColumnsFieldLabel('Included columns');
+    ->filterColumnsFieldLabel('Included columns')
+    ->disableAdditionalColumns();
 ```
 
 | Method | Description |
@@ -272,6 +273,7 @@ TableExportHeaderAction::make()
 | `defaultPageOrientation()` | Default PDF/DOCX orientation |
 | `directDownload()` | Skip the modal and export immediately with defaults |
 | `disableFilterColumns()` | Hide the column picker |
+| `disableAdditionalColumns()` | Hide the end-user additional-columns input |
 | `disableFileName()` | Hide the file name input |
 | `disableFileNamePrefix()` | Disable automatic table-name prefix |
 | `disablePreview()` | Hide the paginated preview |
@@ -286,6 +288,7 @@ TableExportHeaderAction::make()
 | `modifyDompdfWriter()` | Customize the Dompdf instance when using the `dompdf` driver |
 | `modifyXlsxWriter()` | Customize the OpenSpout XLSX writer (sheet name, etc.) |
 | `modifyCsvWriter()` | Customize OpenSpout CSV options (delimiter, BOM) before export |
+| `additionalColumnsFieldLabel()` / `additionalColumnsTitleFieldLabel()` / `additionalColumnsDefaultValueFieldLabel()` / `additionalColumnsAddButtonLabel()` | Labels for the additional-columns UI |
 
 Action-level settings override global config values.
 
@@ -321,8 +324,8 @@ Edit `resources/views/vendor/advanced-table-export-for-filament/pdf/table.blade.
 | Version | Focus |
 |---------|-------|
 | **v1.0.0** | JSON, XML, clipboard, quick export ActionGroups, `formats()` API |
-| **v1.1.0** *(current)* | Word (.docx) export via PhpWord |
-| **v1.2+** | End-user additional-columns UI |
+| **v1.1.0** | Word (.docx) export via PhpWord |
+| **v1.2.0** *(current)* | End-user additional-columns UI |
 
 ---
 

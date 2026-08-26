@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-08-26
+
+### Added
+- **End-user additional columns UI** in the export modal (`KeyValue`: title + default value)
+- `disableAdditionalColumns()` and field label helpers (`additionalColumnsFieldLabel()`, `additionalColumnsTitleFieldLabel()`, `additionalColumnsDefaultValueFieldLabel()`, `additionalColumnsAddButtonLabel()`)
+- Wired config key `disable_additional_columns` (was documented but unused)
+
 ## [1.1.0] - 2026-08-25
 
 ### Added

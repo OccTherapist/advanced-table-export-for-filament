@@ -25,6 +25,7 @@ trait InteractsWithTableExportFormData
             'page_orientation' => $options->defaultPageOrientation,
             'preview_page' => 1,
             'enabled_columns' => $enabledColumns,
+            'additional_columns' => [],
             'file_name' => $options->defaultFileName,
         ];
     }

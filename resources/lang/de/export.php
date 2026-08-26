@@ -12,6 +12,12 @@ return [
     'portrait' => 'Hochformat',
     'file_name' => 'Dateiname',
     'columns' => 'Spalten',
+    'additional_columns' => [
+        'label' => 'Zusätzliche Spalten',
+        'title' => 'Titel',
+        'default_value' => 'Standardwert',
+        'add' => 'Spalte hinzufügen',
+    ],
     'formats' => [
         'csv' => 'CSV',
         'xlsx' => 'Excel (XLSX)',

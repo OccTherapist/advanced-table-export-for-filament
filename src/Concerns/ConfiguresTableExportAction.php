@@ -5,6 +5,7 @@ namespace OccTherapist\AdvancedTableExportForFilament\Concerns;
 use Filament\Actions\Action as FormAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Actions as FormActions;
@@ -91,6 +92,7 @@ trait ConfiguresTableExportAction
                                 'page_orientation' => $get('page_orientation'),
                                 'preview_page' => $get('preview_page'),
                                 'enabled_columns' => $get('enabled_columns'),
+                                'additional_columns' => $get('additional_columns'),
                                 'file_name' => $get('file_name'),
                             ],
                             options: $options,
@@ -144,6 +146,17 @@ trait ConfiguresTableExportAction
                 ->columns(2)
                 ->live()
                 ->afterStateUpdated(fn (Set $set) => $set('preview_page', 1));
+        }
+
+        if (! $options->disableAdditionalColumns) {
+            $schema[] = KeyValue::make('additional_columns')
+                ->label($options->additionalColumnsFieldLabel ?? __('advanced-table-export-for-filament::export.additional_columns.label'))
+                ->keyLabel($options->additionalColumnsTitleFieldLabel ?? __('advanced-table-export-for-filament::export.additional_columns.title'))
+                ->valueLabel($options->additionalColumnsDefaultValueFieldLabel ?? __('advanced-table-export-for-filament::export.additional_columns.default_value'))
+                ->addActionLabel($options->additionalColumnsAddButtonLabel ?? __('advanced-table-export-for-filament::export.additional_columns.add'))
+                ->live()
+                ->afterStateUpdated(fn (Set $set) => $set('preview_page', 1))
+                ->columnSpanFull();
         }
 
         return $schema;
